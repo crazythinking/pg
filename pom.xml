@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>net.engining.project</groupId>
+		<artifactId>project-parent</artifactId>
+		<version>3.2-SNAPSHOT</version>
+	</parent>
+
+	<groupId>net.engining.pg</groupId>
+	<artifactId>pg-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>3.2.0-SNAPSHOT</version>
+	<name>PowerGear - 应用程序开发框架</name>
+	
+	<properties>
+		<pg.version>3.2.0-SNAPSHOT</pg.version>
+	</properties>
+
+	<modules>
+		<module>pg-support</module>
+		<module>pg-maven-plugin</module>
+		<module>pg-parameter</module>
+		<module>pg-batch</module>
+		<module>pg-mq</module>
+		<module>pg-web</module>
+	</modules>
+
+	<dependencyManagement>
+		<!-- 这里是所有子项目使用的依赖项的一个全集，用于在这里统一定义版本，子项目里不需要再指定 -->
+		<dependencies>
+			<dependency>
+				<groupId>net.engining.pg</groupId>
+				<artifactId>pg-support</artifactId>
+				<version>${pg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.engining.pg</groupId>
+				<artifactId>pg-parameter-dict</artifactId>
+				<version>${pg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.engining.pg</groupId>
+				<artifactId>pg-parameter-help</artifactId>
+				<version>${pg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.engining.pg</groupId>
+				<artifactId>pg-batch-dict</artifactId>
+				<version>${pg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.engining.pg</groupId>
+				<artifactId>pg-batch-help</artifactId>
+				<version>${pg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.engining.pg</groupId>
+				<artifactId>pg-mq</artifactId>
+				<version>${pg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.engining.pg</groupId>
+				<artifactId>pg-web</artifactId>
+				<version>${pg.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>net.engining.pg</groupId>
+					<artifactId>pg-maven-plugin</artifactId>
+					<version>${pg.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.engining.pg</groupId>
+		<artifactId>pg-parameter</artifactId>
+		<version>3.2.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>pg-parameter-help</artifactId>
+	<name>PowerGear - pg-parameter-help 参数工具库</name>
+	<dependencies>
+	
+		<!-- 自身框架依赖 -->
+		<dependency>
+			<groupId>net.engining.pg</groupId>
+			<artifactId>pg-parameter-dict</artifactId>
+		</dependency>
+		
+		<!-- Spring Sec, 参数变更审计日志处理会通过SecurityContextHolder获取当前用户容器上下文中的用户 -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-amqp</artifactId>
+			<scope>provided</scope>	<!-- 不强制依赖传递 -->
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+  			<artifactId>commons-collections</artifactId>
+		</dependency>
+		<dependency><!-- 依赖注入，非直接引用，但LocalCachedParameterFacility再maven编译时，没有会报错 -->
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+		</dependency>
+		
+		<!-- Spring 测试支持 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<plugins>
+			<!-- 切面weave支持；这里默认对spring事务管理通过weave的方式切入，因此涉及到JPA事务管理必须加入；另其他切面支持，需要增加相应配置 -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

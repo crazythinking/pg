@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans default-lazy-init="false" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
+		http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd">
+
+	<!-- 测试的环境配置 -->	
+	<bean id="env" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations" value="#{systemProperties['env.files'] ?: 'classpath:/dev/*.properties'}"/>
+	</bean>
+
+	<!-- RabbitMQ连接池 -->
+ 	<task:executor id="amqpConnectionTaskExecutor" pool-size="#{env['mqConnRecvThreads']?:1}"/>
+	
+	<rabbit:connection-factory id="rabbitConnectionFactory" channel-cache-size="#{env['mqChannelCacheSize']?:10}" executor="amqpConnectionTaskExecutor" addresses="#{env['mqAddresses']}" virtual-host="#{env['mqVHost']?:'/dev'}" username="#{env['mqUser']?:'admin'}" password="#{env['mqPassword']?:'admin'}"/>
+	
+	<!-- 标准的建立Queue的参数 -->
+	<rabbit:queue-arguments id="amqpQueueArguments">
+		<!-- 暂时没有 -->
+	</rabbit:queue-arguments>
+	
+	<bean id="messageConverter" class="org.springframework.amqp.support.converter.SimpleMessageConverter"/>
+	
+	<rabbit:template id="amqpTemplate" connection-factory="rabbitConnectionFactory" reply-timeout="#{env['mqRPCTimeout']?:30000}" message-converter="messageConverter"/>
+	
+	<!-- 供自动创建队列 -->
+	<rabbit:admin connection-factory="rabbitConnectionFactory"/>
+	
+	<!-- 队列列表，没有就自动创建 -->
+	<rabbit:queue queue-arguments="amqpQueueArguments" id="serviceQueue" name="pg.mq.test" />
+
+	<!-- 测试服务端 -->
+	<bean id="serviceExporter" class="org.springframework.amqp.remoting.service.AmqpInvokerServiceExporter">
+		<property name="amqpTemplate" ref="amqpTemplate" />
+		<property name="service">
+			<bean class="net.engining.pg.mq.test.GreetingsImpl"/>
+		</property>
+		<property name="serviceInterface" value="net.engining.pg.mq.test.GreetingsApi"/>
+	</bean>
+	
+	<!-- 测试客户端 -->
+	<bean id="serviceClient" class="org.springframework.amqp.remoting.client.AmqpProxyFactoryBean">
+		<property name="amqpTemplate" ref="amqpTemplate"/>
+		<property name="serviceInterface" value="net.engining.pg.mq.test.GreetingsApi"/>
+		<property name="routingKey" value="pg.mq.test"/>
+	</bean>
+	
+	<rabbit:listener-container requeue-rejected="false" concurrency="#{env['mqServiceConcurrency']?:10}" message-converter="messageConverter">
+		<rabbit:listener queues="serviceQueue" ref="serviceExporter" />
+	</rabbit:listener-container>
+	
+</beans>

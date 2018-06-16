@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans default-lazy-init="false" xmlns:p="http://www.springframework.org/schema/p" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:jms="http://www.springframework.org/schema/jms" xmlns:batch="http://www.springframework.org/schema/batch"
+	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.2.xsd
+		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+	<!-- KeyBasedReader相关Bean -->
+	<bean id="partitionReader" class="net.engining.pg.batch.sdk.test.kreader.TestReader" scope="step">
+		<property name="minPartitionSize" value="11"/>
+	</bean>
+	
+	<bean id="testWriter" class="net.engining.pg.batch.sdk.test.kreader.TestWriter"/>
+
+	<bean id="taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor"/>
+	
+	<bean id="taskProcessor" class="net.engining.pg.batch.sdk.test.kreader.BreakDownProcessor"/>
+	
+	<bean id="statelessReader" class="net.engining.pg.batch.sdk.test.kreader.StatelessReader"/>
+	
+	<bean id="statelessProcessor" class="net.engining.pg.batch.sdk.test.kreader.StatelessProcessor"/>
+	
+	<bean id="dummyWriter" class="net.engining.pg.batch.sdk.NullItemWriter"/>
+	
+	<batch:step id="testReader">
+		<batch:tasklet>
+			<batch:chunk reader="partitionReader" writer="testWriter" processor="taskProcessor" commit-interval="71"/>
+		</batch:tasklet>
+	</batch:step>
+	
+	<!-- PgFileReader相关Bean -->
+	<bean id="fpartitionReader" class="net.engining.pg.batch.sdk.PgFileItemReader" scope="step">
+		<property name="fileDetailClass" value="net.engining.pg.batch.sdk.test.freader.InputItem"/>
+		<property name="resource" ref="inputFileMock"/>
+		<property name="minPartitionSize" value="11"/>
+	</bean>
+	
+ 	<bean id="inputFileMock" class="net.engining.pg.batch.sdk.PgFileResourceMock">
+		<description>测试输入文件</description>
+		<property name="fileDetailClass" value="net.engining.pg.batch.sdk.test.freader.InputItem"/>
+		<property name="deleteOnExit" value="true"/>
+	</bean>
+	<bean id="filetestWriter" class="net.engining.pg.batch.sdk.test.freader.TestWriter"/>
+
+	<bean id="ftaskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor"/>
+	
+	<batch:step id="ftestReader">
+		<batch:tasklet>
+			<batch:chunk reader="fpartitionReader" writer="filetestWriter" commit-interval="71"/>
+		</batch:tasklet>
+	</batch:step>
+
+	<batch:job id="job" >
+	
+		<!-- KeyBasedReader相关测试step -->
+		<!-- 正常测试 -->
+		<batch:step id="normalReader" parent="testReader" next="partitionReader1"/>
+
+		<!-- 并发测试，1个并发 -->
+		<batch:step id="partitionReader1" next="partitionReader7">
+			<batch:partition partitioner="partitionReader" step="testReader">
+				<batch:handler grid-size="1" task-executor="taskExecutor"/>
+			</batch:partition>
+		</batch:step>
+
+		<!-- 并发测试，7个并发 -->
+		<batch:step id="partitionReader7" next="partitionReader100">
+			<batch:partition partitioner="partitionReader" step="testReader">
+				<batch:handler grid-size="7" task-executor="taskExecutor"/>
+			</batch:partition>
+		</batch:step>
+
+		<!-- 并发测试，100个并发 -->
+		<batch:step id="partitionReader100" next="statelessReaderStep">
+			<batch:partition partitioner="partitionReader" step="testReader">
+				<batch:handler grid-size="100" task-executor="taskExecutor"/>
+			</batch:partition>
+		</batch:step>
+		<!-- 无状态版本 -->
+		<batch:step id="statelessReaderStep" next="fnormalReader">
+			<batch:tasklet>
+				<batch:chunk reader="statelessReader" processor="statelessProcessor" writer="dummyWriter" commit-interval="71"/>
+			</batch:tasklet>
+		</batch:step>
+		
+		<!-- PgFileReader相关测试step -->
+		<!-- 正常测试 -->
+		<batch:step id="fnormalReader" parent="ftestReader" next="fpartitionReader1"/>
+
+		<!-- 并发测试，1个并发 -->
+		<batch:step id="fpartitionReader1" next="fpartitionReader7">
+			<batch:partition partitioner="fpartitionReader" step="ftestReader">
+				<batch:handler grid-size="1" task-executor="ftaskExecutor"/>
+			</batch:partition>
+		</batch:step>
+
+		<!-- 并发测试，7个并发 -->
+		<batch:step id="fpartitionReader7" next="fpartitionReader100">
+			<batch:partition partitioner="fpartitionReader" step="ftestReader">
+				<batch:handler grid-size="7" task-executor="ftaskExecutor"/>
+			</batch:partition>
+		</batch:step>
+
+		<!-- 并发测试，100个并发 -->
+		<batch:step id="fpartitionReader100" >
+			<batch:partition partitioner="fpartitionReader" step="ftestReader">
+				<batch:handler grid-size="100" task-executor="ftaskExecutor"/>
+			</batch:partition>
+		</batch:step>
+
+	</batch:job>
+
+</beans>
