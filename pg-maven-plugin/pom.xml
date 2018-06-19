@@ -13,7 +13,7 @@
 	 -->
 	<groupId>net.engining.pg</groupId>
 	<artifactId>pg-maven-plugin</artifactId>
-	<version>3.3.0-SNAPSHOT</version>
+	<version>3.2.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>PowerGear - 代码生成Maven插件</name>
 	<description>用于生成基于PowerGear的基础数据库包装框架。用于代码生成的代码模型API基于ibator的内部工具类，其License基于Apache License V2，见 http://http://ibatis.apache.org/docs/tools/ibator/license.html </description>
@@ -22,7 +22,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
 
-		<pg.version>3.3.0-SNAPSHOT</pg.version>
+		<pg.version>3.2.0-SNAPSHOT</pg.version>
 		<plexus-build-api.version>0.0.7</plexus-build-api.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<jaxen.version>1.1.6</jaxen.version>

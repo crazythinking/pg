@@ -6,17 +6,17 @@
 	<parent>
 		<groupId>net.engining.project</groupId>
 		<artifactId>project-parent</artifactId>
-		<version>3.3-SNAPSHOT</version>
+		<version>3.2-SNAPSHOT</version>
 	</parent>
 
 	<groupId>net.engining.pg</groupId>
 	<artifactId>pg-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>3.3.0-SNAPSHOT</version>
+	<version>3.2.0-SNAPSHOT</version>
 	<name>PowerGear - 应用程序开发框架</name>
 	
 	<properties>
-		<pg.version>3.3.0-SNAPSHOT</pg.version>
+		<pg.version>3.2.0-SNAPSHOT</pg.version>
 	</properties>
 
 	<modules>
