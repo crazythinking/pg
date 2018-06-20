@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.TreeMap;
+import java.util.Vector;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,17 +37,20 @@ import net.engining.pg.batch.entity.model.PgKeyContext;
  * @param <INFO>
  *            处理实体类型
  */
-public abstract class KeyBasedStreamReader<KEY, INFO> extends AbstractItemCountingItemStreamItemReader<INFO>
+public abstract class AbstractKeyBasedStreamReader<KEY, INFO> extends AbstractItemCountingItemStreamItemReader<INFO>
 		implements ItemStreamReader<INFO>, Partitioner, BeanNameAware {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	private List<KEY> allKeys;
+	
+	/**
+	 * 为了能够线程安全的遍历allKeys，将List转换为Vector进行遍历
+	 */
+	private Vector<KEY> allKeysVector;
 
 	private Iterator<KEY> keyIterator;
 	
-	private KEY key;
-
 	private final String KEY_CONTEXT_KEY = "keyContextId";
 
 	@PersistenceContext
@@ -80,26 +83,32 @@ public abstract class KeyBasedStreamReader<KEY, INFO> extends AbstractItemCounti
 		}
 		
 		//并发时可能会造成多个线程抢同一个keyIterator.next()，造成上面保护逻辑失效；这里只能暂时先通过try-catch保护
-		try{
-			return loadItemByKey(keyIterator.next());
-		}
-		catch(NoSuchElementException ex){
-			logger.warn("已经没有下一个key了，已经被其他线程取走");
-			return null;
+//		try{
+//			KEY key = keyIterator.next();
+//			logger.debug("from keyIterator get key=[{}]",JSON.toJSONString(key));
+//			return loadItemByKey(key);
+//		}
+//		catch(NoSuchElementException ex){
+//			logger.warn("已经没有下一个key了，已经被其他线程取走");
+//			return null;
+//		}
+		
+		KEY key = null;
+		synchronized (keyIterator){
+			key = keyIterator.next();
+//			logger.debug("from keyIterator get key=[{}]",JSON.toJSONString(key));
 		}
 		
-//		synchronized (key){
-//			key = keyIterator.next();
-//		}
-//		
-//		return loadItemByKey(key);
+		return loadItemByKey(key);
 	}
 
 	@Override
 	protected void doOpen() throws Exception {
 		// allKeys应该在beforeStep里加载或直接从ExecutionContext读取
 
-		keyIterator = allKeys.iterator();
+//		keyIterator = allKeys.iterator();
+		//从Vector获取的迭代器，确保线程安全
+		keyIterator = allKeysVector.iterator();
 
 	}
 
@@ -120,7 +129,9 @@ public abstract class KeyBasedStreamReader<KEY, INFO> extends AbstractItemCounti
 			keyIterator = Collections.EMPTY_LIST.iterator();
 		}
 		else {
-			keyIterator = allKeys.subList(itemIndex, allKeys.size()).iterator();
+//			keyIterator = allKeys.subList(itemIndex, allKeys.size()).iterator();
+			//从Vector获取的迭代器，确保线程安全
+			keyIterator = allKeysVector.subList(itemIndex, allKeys.size()).iterator();
 		}
 	}
 
@@ -129,6 +140,7 @@ public abstract class KeyBasedStreamReader<KEY, INFO> extends AbstractItemCounti
 		// 清空缓存，以防万一
 		keyIterator = null;
 		allKeys = null;
+		allKeysVector = null;
 	}
 
 	@Override
@@ -180,12 +192,16 @@ public abstract class KeyBasedStreamReader<KEY, INFO> extends AbstractItemCounti
 			long contextId = ec.getLong(KEY_CONTEXT_KEY);
 			PgKeyContext context = em.find(PgKeyContext.class, contextId);
 			allKeys = (List<KEY>) context.getKeyList();
+			//转换为线程安全的Vector
+			allKeysVector = new Vector<KEY>(allKeys);
 			logger.info("加载已有的ContextId:{}，共{}条主键信息。", contextId, allKeys.size());
 		}
 		else {
 			// 如果没有Partitioner，就在这里把所有主键加载，并且写入ExecutionContext
 			// 但这个ExecutionContext会在第一次update时写入数据库，这个操作是在chunk的事务之外的
 			allKeys = loadKeys();
+			//转换为线程安全的Vector
+			allKeysVector = new Vector<KEY>(allKeys);
 			long contextId = createNewKeyContext(new ArrayList<KEY>(allKeys)).getContextId();
 			ec.putLong(KEY_CONTEXT_KEY, contextId);
 			logger.info("加载新建的ContextId:{}，共{}条主键信息。", contextId, allKeys.size());

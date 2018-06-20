@@ -5,14 +5,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import net.engining.pg.batch.sdk.KeyBasedStreamReader;
+import net.engining.pg.batch.sdk.AbstractKeyBasedStreamReader;
 
 /**
  * 
  * @author luxue
  *
  */
-public class TestReader extends KeyBasedStreamReader<KeyBasedReaderEntityKey, KeyBasedReaderEntity> {
+public class TestReader extends AbstractKeyBasedStreamReader<KeyBasedReaderEntityKey, KeyBasedReaderEntity> {
 
 	@PersistenceContext
 	private EntityManager em;

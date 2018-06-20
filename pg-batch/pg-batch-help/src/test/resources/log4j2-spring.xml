@@ -71,6 +71,7 @@
     </Appenders>
 
     <Loggers>
+    	<Logger name="net.engining" level="TRACE" additivity="true"/>
         <Logger name="org.springframework" level="INFO" additivity="true"/>
         <!-- <Logger name="org.springframework.boot" level="TRACE" additivity="true"/> -->
         
