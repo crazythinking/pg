@@ -81,6 +81,7 @@ public class KeyBasedReaderTest extends AbstractTestCase{
 		//验证比较结果
 		validate();
 	}
+	
 	@Test
 	public void partitionReader100() throws Exception
 	{

@@ -1,2 +1,2 @@
-# pg-springboot
-infrastructure gears based spring boot 1.5.3
+# pg
+infrastructure gears based spring boot 1.5.14
