@@ -78,9 +78,6 @@ public abstract class AbstractKeyBasedStreamReader<KEY, INFO> extends AbstractIt
 
 	@Override
 	protected INFO doRead() throws Exception {
-		if (!keyIterator.hasNext()) {
-			return null;
-		}
 		
 		//并发时可能会造成多个线程抢同一个keyIterator.next()，造成上面保护逻辑失效；这里只能暂时先通过try-catch保护
 //		try{
@@ -95,6 +92,9 @@ public abstract class AbstractKeyBasedStreamReader<KEY, INFO> extends AbstractIt
 		
 		KEY key = null;
 		synchronized (keyIterator){
+			if (!keyIterator.hasNext()) {
+				return null;
+			}
 			key = keyIterator.next();
 //			logger.debug("from keyIterator get key=[{}]",JSON.toJSONString(key));
 		}
