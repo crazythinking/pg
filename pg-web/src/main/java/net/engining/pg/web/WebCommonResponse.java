@@ -28,12 +28,12 @@ public class WebCommonResponse<T> implements Serializable {
 	/**
 	 * 返回结果码
 	 */
-	private String statusCode;
+	private String statusCode = CODE_OK;
 
 	/**
 	 * 返回结果描述
 	 */
-	private String statusDesc;
+	private String statusDesc = DESC_SUCCESS;
 
 	/**
 	 * 请求交易流水号
@@ -48,7 +48,7 @@ public class WebCommonResponse<T> implements Serializable {
 	/**
 	 * 交易返回时间
 	 */
-	private Date timestamp;
+	private Date timestamp = new Date();
 
 	/**
 	 * 返回业务数据
