@@ -42,9 +42,7 @@ public class ErrorMessageException extends NestedRuntimeException{
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		if(Optional.fromNullable(t).isPresent()){
 			t.printStackTrace(printWriter);
-			if(log.isDebugEnabled()){
-				log.debug(StringUtils.CR+StringUtils.LF+stringWriter.toString()+StringUtils.CR+StringUtils.LF);
-			}
+			log.error(StringUtils.CR+StringUtils.LF+stringWriter.toString()+StringUtils.CR+StringUtils.LF);
 		}
 		
 	}
