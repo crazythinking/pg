@@ -17,6 +17,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.engining.pg</groupId>
+			<artifactId>pg-web</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.pg</groupId>
 			<artifactId>pg-batch-dict</artifactId>
 		</dependency>
 		
@@ -35,6 +40,11 @@
 			<artifactId>spring-boot-autoconfigure</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<!-- Spring Batch -->
 		<dependency>
 			<groupId>org.springframework.batch</groupId>
@@ -43,6 +53,10 @@
 		<dependency>
 			<groupId>org.springframework.batch</groupId>
 			<artifactId>spring-batch-infrastructure</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-integration</artifactId>
 		</dependency>
 		
 		<dependency>
@@ -77,9 +91,22 @@
 			<artifactId>spring-batch-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 	</dependencies>
 	<build>
 		<plugins>
+			<!-- spring-boot-configuration-processor 会造成造成aspectj-maven-plugin插件进行AJC的时候报错;	<br>
+ 							root cause: https://bugs.eclipse.org/bugs/show_bug.cgi?id=530665	<br>
+ 							Perhaps fix this at : https://github.com/spring-projects/spring-boot/issues/4847;
+ 							暂时的解决方案是如下maven-compiler-plugin配置；交给aspectj-maven-plugin去执行；
+ 							You could also let the AspectJ plugin run all the processing and disable annotation processing in the maven-compiler-plugin configuration-->
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-compiler-plugin</artifactId>
+			    <configuration>
+			        <proc>none</proc>
+			    </configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
