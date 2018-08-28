@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  */
 @ConfigurationProperties(prefix = "pg.batch")
-public class BatchTaskProperties {
+public class PgBatchTaskProperties {
 	
 	/**
 	 * 批量任务分片默认网格Size

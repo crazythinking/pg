@@ -51,13 +51,13 @@
 					<create_comment>true</create_comment>
 					<create_foreignKey>false</create_foreignKey>
 					<create_index>true</create_index>
-					<create_sequence>true</create_sequence>
+					<create_sequence>false</create_sequence>
 					<create_table>true</create_table>
 					<create_tablespace>true</create_tablespace>
 					<create_trigger>false</create_trigger>
 					<create_view>false</create_view>
 					<drop_index>true</drop_index>
-					<drop_sequence>true</drop_sequence>
+					<drop_sequence>false</drop_sequence>
 					<drop_table>true</drop_table>
 					<drop_tablespace>true</drop_tablespace>
 					<drop_trigger>false</drop_trigger>
@@ -135,7 +135,7 @@
 			</connections>
 			<display>false</display>
 			<creation_date>2018-02-13 14:29:21</creation_date>
-			<updated_date>2018-08-28 11:43:27</updated_date>
+			<updated_date>2018-08-28 15:32:13</updated_date>
 			<model_property>
 				<name>Project Name</name>
 				<value></value>

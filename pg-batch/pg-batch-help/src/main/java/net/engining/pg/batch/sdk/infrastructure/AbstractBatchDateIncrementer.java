@@ -15,16 +15,16 @@ public abstract class AbstractBatchDateIncrementer implements JobParametersIncre
 	
 	private String batchSeqPrefix = null;
 	
-	public abstract JobParameters setupJobParameters();
+	public abstract JobParameters setupJobParameters(JobParameters parameters);
 
 	@Override
 	public JobParameters getNext(JobParameters parameters) {
 
 		Preconditions.checkNotNull(batchSeqPrefix, "Batch seqence prefix cannot be null");
-		JobParameters jobParam = setupJobParameters();
+		parameters = setupJobParameters(parameters);
 
-		log.info("当前系统时间{}, Batch Job Parameters: batchSeq={}", new Date(), jobParam.getString(BatchJobParameterKeys.BatchSeq));
-		return jobParam;
+		log.info("当前系统时间{}, Batch Job Parameters: batchSeq={}", new Date(), parameters.getString(BatchJobParameterKeys.BatchSeq));
+		return parameters;
 	}
 
 	/**

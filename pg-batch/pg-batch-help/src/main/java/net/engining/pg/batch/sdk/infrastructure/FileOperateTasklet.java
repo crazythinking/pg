@@ -17,7 +17,7 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
 
-import net.engining.pg.batch.props.BatchTaskProperties;
+import net.engining.pg.batch.props.PgBatchTaskProperties;
 import net.engining.pg.batch.sdk.infrastructure.meta.FileOperateActionBean;
 import net.engining.pg.batch.sdk.infrastructure.meta.FileOperationType;
 import net.engining.pg.batch.sdk.infrastructure.utils.FileOperationUtils;
@@ -43,7 +43,7 @@ public class FileOperateTasklet implements Tasklet {
 	List<FileOperateActionBean> fileOperateActions;
 	
 	@Autowired
-	BatchTaskProperties batchTaskProperties;
+	PgBatchTaskProperties batchTaskProperties;
 
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {

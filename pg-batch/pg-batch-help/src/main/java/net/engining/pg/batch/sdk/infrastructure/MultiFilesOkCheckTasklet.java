@@ -20,7 +20,7 @@ import org.springframework.util.Assert;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
-import net.engining.pg.batch.props.BatchTaskProperties;
+import net.engining.pg.batch.props.PgBatchTaskProperties;
 import net.engining.pg.batch.sdk.infrastructure.meta.FileOperateActionBean;
 import net.engining.pg.batch.sdk.infrastructure.meta.FileOperationType;
 import net.engining.pg.batch.sdk.infrastructure.utils.FileOperationUtils;
@@ -65,7 +65,7 @@ public class MultiFilesOkCheckTasklet implements Tasklet {
 	private boolean strict = true;
 	
 	@Autowired
-	BatchTaskProperties batchTaskProperties;
+	PgBatchTaskProperties batchTaskProperties;
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.batch.core.step.tasklet.Tasklet#execute(org.springframework.batch.core.StepContribution, org.springframework.batch.core.scope.context.ChunkContext)
