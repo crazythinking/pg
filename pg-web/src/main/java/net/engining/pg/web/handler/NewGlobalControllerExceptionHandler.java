@@ -19,27 +19,27 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import net.engining.pg.support.core.exception.ErrorCode;
 import net.engining.pg.support.core.exception.ErrorMessageException;
 import net.engining.pg.support.utils.ExceptionUtilsExt;
-import net.engining.pg.web.WebCommonResponse;
-import net.engining.pg.web.WebCommonResponseBuilder;
+import net.engining.pg.web.NewWebCommonResponseBuilder;
+import net.engining.pg.web.bean.NewWebCommonResponse;
 
 /**
+ * 重构，支持自定义ResponseHead
+ * Controller 针对内嵌项目的全局异常处理；
  * 
- * Controller全局异常处理
  * @author luxue
  *
  */
-@Deprecated
 @RestControllerAdvice
-public class GlobalControllerExceptionHandler {
+public class NewGlobalControllerExceptionHandler {
 	
-	private static final Logger log = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(NewGlobalControllerExceptionHandler.class);
 
 	@SuppressWarnings("rawtypes")
 	@ExceptionHandler(value = { ConstraintViolationException.class })
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	public <T> WebCommonResponse<T> constraintViolationException(ConstraintViolationException ex) {
-		WebCommonResponse<T> rsp = setupReturn(HttpStatus.BAD_REQUEST.toString(), "请求参数不符合规范！");
+	public <H,T> NewWebCommonResponse<H,T> constraintViolationException(ConstraintViolationException ex) {
+		NewWebCommonResponse<H,T> rsp = setupReturn(HttpStatus.BAD_REQUEST.toString(), "请求参数不符合规范！");
 		for(ConstraintViolation constraintViolation : ex.getConstraintViolations()){
 			String propName = constraintViolation.getPropertyPath().toString();
 			rsp.putAdditionalRepMap(propName, constraintViolation.getMessage());
@@ -50,8 +50,8 @@ public class GlobalControllerExceptionHandler {
 	@ExceptionHandler(value = {MethodArgumentNotValidException.class})
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	public <T> WebCommonResponse<T> methodArgumentNotValidException(MethodArgumentNotValidException ex) {
-		WebCommonResponse<T> rsp = setupReturn(HttpStatus.BAD_REQUEST.toString(), "请求参数不符合规范！");
+	public <H,T> NewWebCommonResponse<H,T> methodArgumentNotValidException(MethodArgumentNotValidException ex) {
+		NewWebCommonResponse<H,T> rsp = setupReturn(HttpStatus.BAD_REQUEST.toString(), "请求参数不符合规范！");
 		BindingResult bindingResult = ex.getBindingResult();
 		for(FieldError fieldError : bindingResult.getFieldErrors()){
 			rsp.putAdditionalRepMap(fieldError.getField(), fieldError.getDefaultMessage());
@@ -62,33 +62,35 @@ public class GlobalControllerExceptionHandler {
 	@ExceptionHandler(value = { ErrorMessageException.class })
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	public <T> WebCommonResponse<T> IllegalArgumentException(ErrorMessageException ex) {
-		return setupReturn(ex.getErrorCode().getValue(), ex.getErrorCode().getLabel()+" : "+ex.getMessage());
+	public <H,T> NewWebCommonResponse<H,T> IllegalArgumentException(ErrorMessageException ex) {
+		return setupReturn(ex.getErrorCode().getValue(), ex.getMessage());
 	}
 
 	@ExceptionHandler(value = { NoHandlerFoundException.class })
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	public <T> WebCommonResponse<T> noHandlerFoundException(NoHandlerFoundException ex) {
+	public <H,T> NewWebCommonResponse<H,T> noHandlerFoundException(NoHandlerFoundException ex) {
 		return setupReturn(HttpStatus.NOT_FOUND.toString(), ex.getMessage());
 	}
 
 	@ExceptionHandler(value = { Exception.class })
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	public <T> WebCommonResponse<T> unknownException(Exception ex) {
+	public <H,T> NewWebCommonResponse<H,T> unknownException(Exception ex) {
 		//不可预料的异常，需要打印错误堆栈
 		dump(ex.getCause());
 		return setupReturn(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
 	}
 
-	private <T> WebCommonResponse<T> setupReturn(String errorCode, String msg) {
+	private <H,T> NewWebCommonResponse<H,T> setupReturn(String errorCode, String msg) {
 		if(StringUtils.isBlank(msg)){
 			msg = ErrorCode.UnknowFail.getLabel();
 		}
-		return new WebCommonResponseBuilder<T>().build()
-				.setStatusCode(errorCode)
-				.setStatusDesc(msg);
+		else {
+			msg = ErrorCode.UnknowFail.getLabel()+" : "+msg;
+		}
+		
+		return new NewWebCommonResponseBuilder<H,T>().build().setStatusCode(errorCode).setStatusDesc(msg);
 	}
 	
 	private void dump(Throwable t){

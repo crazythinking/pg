@@ -24,15 +24,14 @@ import net.engining.pg.web.WebCommonResponseBuilder;
 
 /**
  * 
- * Controller全局异常处理
+ * Controller 针对内嵌项目的全局异常处理；
  * @author luxue
  *
  */
-@Deprecated
 @RestControllerAdvice
-public class GlobalControllerExceptionHandler {
+public class NestGlobalControllerExceptionHandler {
 	
-	private static final Logger log = LoggerFactory.getLogger(GlobalControllerExceptionHandler.class);
+	private static final Logger log = LoggerFactory.getLogger(NestGlobalControllerExceptionHandler.class);
 
 	@SuppressWarnings("rawtypes")
 	@ExceptionHandler(value = { ConstraintViolationException.class })

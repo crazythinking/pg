@@ -9,12 +9,12 @@ import org.joda.time.LocalDate;
 import com.google.common.collect.Maps;
 
 /**
- * FIXME 重构，定义header
  * 通用的Web Response
  * 
  * @author luxue
  *
  */
+@Deprecated
 public class WebCommonResponse<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;

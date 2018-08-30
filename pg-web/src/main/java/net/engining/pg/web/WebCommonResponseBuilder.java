@@ -5,6 +5,7 @@ package net.engining.pg.web;
  * @author luxue
  *
  */
+@Deprecated
 public class WebCommonResponseBuilder<T> {
 	
 	public WebCommonResponse<T> build(){

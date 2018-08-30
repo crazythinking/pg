@@ -1,12 +1,9 @@
-/**
- * 
- */
 package net.engining.pg.web;
 
 import java.io.Serializable;
 
 /**
- * 具体业务交易的Response Bean的基类
+ * 具体业务交易的Nested Response Bean的基类
  * @author luxue
  *
  */

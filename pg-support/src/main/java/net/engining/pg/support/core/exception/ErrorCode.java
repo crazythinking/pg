@@ -1,40 +1,81 @@
-/**
- * 
- */
 package net.engining.pg.support.core.exception;
+
+import net.engining.pg.support.enums.BaseEnum;
 
 /**
  * @author luxue
  *
  */
-public enum ErrorCode
+public enum ErrorCode implements BaseEnum<ErrorCode, String>
 {
 	/**
-	 * 请求不合法
+	 * 请求成功
 	 */
-	BadRequest,
+	Success("0000","Success"),
+	
+	/**
+	 * 未知错误
+	 */
+	UnknowFail("9999","Failed, Unknown Reason"),
 	
 	/**
 	 * 系统内部错误
 	 */
-	SystemError,
+	SystemError("9900","系统内部错误"),
 	
 	/**
 	 * 账户限制
 	 */
-	Restricted,
-	
-	/**
-	 * 其它错误
-	 */
-	Other,
-	/**
-	 * 数据为空
-	 */
-	Null,
+	Restricted("9800","账户限制"),
 	
 	/**
 	 * 检查错误
 	 */
-	CheckError
+	CheckError("9700","检查错误"),
+	
+	/**
+	 * 请求不合法
+	 */
+	BadRequest("9600","请求不合法"),
+	
+	/**
+	 * 相关数据为空
+	 */
+	Null("9100","相关数据为空"),
+	
+	/**
+	 * 其它异常非系统错误
+	 */
+	Other("9000","其它异常非系统错误"),
+	
+	;
+	
+	private final String value;
+
+    private final String label;
+
+    ErrorCode(String value, String label) {
+        this.value = value;
+        this.label = label;
+    }
+
+    public static ErrorCode getEnum(String label) {
+        if (null == label)
+            return null;
+        for (ErrorCode tmpEnum : ErrorCode.values()) {
+            if (label.equals(tmpEnum.getLabel()))
+                return tmpEnum;
+        }
+        return null;
+    }
+
+	@Override
+	public String getValue() {
+		return value;
+	}
+
+	@Override
+	public String getLabel() {
+		return label;
+	}
 }
