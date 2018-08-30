@@ -59,16 +59,6 @@ public enum ErrorCode implements BaseEnum<ErrorCode, String>
         this.label = label;
     }
 
-    public static ErrorCode getEnum(String label) {
-        if (null == label)
-            return null;
-        for (ErrorCode tmpEnum : ErrorCode.values()) {
-            if (label.equals(tmpEnum.getLabel()))
-                return tmpEnum;
-        }
-        return null;
-    }
-
 	@Override
 	public String getValue() {
 		return value;
