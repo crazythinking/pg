@@ -3,7 +3,7 @@ package net.engining.pg.batch.sdk.file;
 import java.io.Serializable;
 
 /**
- * Json格式的交互文件头定义
+ * 交互文件头定义
  * @author luxue
  *
  */
@@ -29,7 +29,9 @@ public class FlatFileHeader implements Serializable {
 	/**
 	 * 明细记录总行数
 	 */
-	public int totalLines;
+	private int totalLines;
+	
+	private String headContent;
 
 	public int getTotalLines() {
 		return totalLines;
@@ -37,6 +39,20 @@ public class FlatFileHeader implements Serializable {
 
 	public void setTotalLines(int totalLines) {
 		this.totalLines = totalLines;
+	}
+
+	/**
+	 * @return the headContent
+	 */
+	public String getHeadContent() {
+		return headContent;
+	}
+
+	/**
+	 * @param headContent the headContent to set
+	 */
+	public void setHeadContent(String headContent) {
+		this.headContent = headContent;
 	}
 
 }

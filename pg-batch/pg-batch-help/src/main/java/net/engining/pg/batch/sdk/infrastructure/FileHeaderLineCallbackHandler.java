@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.item.file.LineCallbackHandler;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,94 +20,94 @@ import net.engining.pg.batch.entity.model.QBtSysChecklist;
 import net.engining.pg.batch.sdk.file.FlatFileHeader;
 
 /**
- * File Header 处理组件；针对只用一行String表示文件头数据；
+ * 
+ * File Header 处理组件 批量任务，每读一行头数据都会调用该类handleLine方法；
+ * 
  * 记录数据到BT_SYS_CHECKLIST表
+ * 
  * @author luxue
  *
  */
 public class FileHeaderLineCallbackHandler implements LineCallbackHandler {
-	
+
 	@PersistenceContext
 	private EntityManager em;
-	
+
 	/**
 	 * Header数据包含的行数
 	 */
 	private int headerLineNumber;
-	
+
 	/**
 	 * 支持多个文件情况下，headerLineNumber的乘数
 	 */
 	private int mult = 1;
-	
+
 	/**
 	 * 已读行数
 	 */
 	private int readLines = 0;
-	
+
+	private String delimiter = ",";
+
 	private String batchSeq;
-	
+
 	private String inspectionCd;
-	
+
 	private Date bizDate;
-	
+
 	private FlatFileHeader fileHeader;
-	
+
 	private FlatFileHeader.Type headerType;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.batch.item.file.LineCallbackHandler#handleLine(java.
-	 * lang.String)
-	 */
 	@Override
 	@Transactional
 	public void handleLine(String line) {
 		readLines++;
-		
-		// 记录文件头数据到CACT_SYS_CHECKLIST表
-		if(readLines <= headerLineNumber*mult){
-			
+
+		// 记录文件头数据到BT_SYS_CHECKLIST表
+		if (readLines <= headerLineNumber * mult) {
+
 			QBtSysChecklist qCactSysChecklist = QBtSysChecklist.btSysChecklist;
-			BtSysChecklist cactSysChecklist = new JPAQueryFactory(em)
-					.select(qCactSysChecklist)
-					.from(qCactSysChecklist)
-					.where(
-							qCactSysChecklist.batchSeq.eq(batchSeq),
+			BtSysChecklist cactSysChecklist = new JPAQueryFactory(em).select(qCactSysChecklist).from(qCactSysChecklist)
+					.where(qCactSysChecklist.batchSeq.eq(batchSeq), 
 							qCactSysChecklist.inspectionCd.eq(inspectionCd),
-							qCactSysChecklist.bizDate.eq(bizDate)
-							)
+							qCactSysChecklist.bizDate.eq(bizDate))
 					.fetchOne();
-			
-			//保存文件Header数据
-			if(headerType.equals(FlatFileHeader.Type.SimpleInteger)){
+
+			// 保存文件Header数据
+			if (headerType.equals(FlatFileHeader.Type.SimpleInteger)) {
 				fileHeader = new FlatFileHeader();
 				fileHeader.setTotalLines(Integer.parseInt(line));
+
+			}
+			else if (headerType.equals(FlatFileHeader.Type.SimpleString)) {
+				fileHeader = new FlatFileHeader();
+				String[] head = StringUtils.split(line, delimiter);
+				fileHeader.setHeadContent(JSON.toJSONString(head));
+
+			}
+			else if (headerType.equals(FlatFileHeader.Type.JsonString)) {
+				fileHeader = new FlatFileHeader();
+				fileHeader.setHeadContent(line);
+			}
+
+			//将文件头数据存入，以备后用
+			if (fileHeader != null) {
+				List<FlatFileHeader> list = new ArrayList<FlatFileHeader>();
 				
-			}
-			else if(headerType.equals(FlatFileHeader.Type.SimpleString)){
-				fileHeader = new FlatFileHeader();
-				//TODO 没想好怎么处理
-			}
-			else if(headerType.equals(FlatFileHeader.Type.JsonString)){
-				fileHeader = new FlatFileHeader();
-				fileHeader = JSON.parseObject(line, FlatFileHeader.class);
-			}
-			List<FlatFileHeader> list=new ArrayList<FlatFileHeader>();
-			if(fileHeader != null){
-				if(cactSysChecklist.getCheckBizData() != null){
-					
-					list= JSONObject.parseArray(cactSysChecklist.getCheckBizData(),FlatFileHeader.class);
+				if (cactSysChecklist.getCheckBizData() != null) {
+					//有数据的情况，往后追加
+					list = JSONObject.parseArray(cactSysChecklist.getCheckBizData(), FlatFileHeader.class);
 					list.add(fileHeader);
 					cactSysChecklist.setCheckBizData(JSON.toJSONString(list));
-				}else{
+				}
+				else {
 					list.add(fileHeader);
 					cactSysChecklist.setCheckBizData(JSON.toJSONString(list));
 				}
 			}
-			
+
 		}
 	}
 
@@ -144,6 +145,14 @@ public class FileHeaderLineCallbackHandler implements LineCallbackHandler {
 
 	public void setReadLines(int readLines) {
 		this.readLines = readLines;
+	}
+
+	/**
+	 * @param delimiter
+	 *            the delimiter to set
+	 */
+	public void setDelimiter(String delimiter) {
+		this.delimiter = delimiter;
 	}
 
 }
