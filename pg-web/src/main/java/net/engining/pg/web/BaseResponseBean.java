@@ -1,6 +1,9 @@
 package net.engining.pg.web;
 
 import java.io.Serializable;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 /**
  * 具体业务交易的Nested Response Bean的基类
@@ -20,7 +23,35 @@ public class BaseResponseBean implements Serializable{
 	 * 返回结果描述
 	 */
 	private String returnDesc;
+	
+	/**
+	 * 其他附加信息
+	 */
+	private Map<String, Serializable> additionalRepMap;
+	
+	public BaseResponseBean() {
+		this.additionalRepMap = Maps.newHashMap();
+	}
 
+	/**
+	 * @return the additionalRepMap
+	 */
+	public Map<String, Serializable> getAdditionalRepMap() {
+		return additionalRepMap;
+	}
+
+	/**
+	 * @param additionalRepMap
+	 *            the additionalRepMap to set
+	 */
+	public void putAdditionalRepMap(String repKey, Serializable repBean) {
+		add(repKey, repBean);
+	}
+
+	private void add(String repKey, Serializable repBean) {
+		this.additionalRepMap.put(repKey, repBean);
+	}
+	
 	/**
 	 * @return the returnCode
 	 */

@@ -42,6 +42,7 @@ public class NewWebCommonResponse<H,T> implements Serializable {
 	 * 其他附加信息
 	 */
 	private Map<String, Serializable> additionalRepMap;
+	
 	/**
 	 * @return the statusCode
 	 */

@@ -58,7 +58,7 @@ public class WebCommonRequest<T> implements Serializable {
 	/**
 	 * 异步接口标识
 	 */
-	@NotBlank
+	@NotNull
 	private AsynInd asynInd;
 
 	/**
