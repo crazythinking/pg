@@ -14,7 +14,6 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.file.FlatFileParseException;
-import org.springframework.stereotype.Component;
 
 import net.engining.pg.batch.entity.model.BtImportException;
 import net.engining.pg.support.core.exception.ErrorMessageException;
@@ -25,7 +24,6 @@ import net.engining.pg.support.core.exception.ErrorMessageException;
  * @author luxue
  *
  */
-@Component
 public class BatchStepFlatFileErroredListener implements StepExecutionListener {
 
 	private static final Logger log = LoggerFactory.getLogger(BatchStepFlatFileErroredListener.class);

@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
+import net.engining.pg.support.core.exception.ErrorCode;
+
 /**
  * 具体业务交易的Nested Response Bean的基类
  * @author luxue
@@ -17,12 +19,12 @@ public class BaseResponseBean implements Serializable{
 	/**
 	 * 返回结果码
 	 */
-	private String returnCode;
+	private String returnCode = ErrorCode.Success.getValue();
 	
 	/**
 	 * 返回结果描述
 	 */
-	private String returnDesc;
+	private String returnDesc = ErrorCode.Success.getLabel();
 	
 	/**
 	 * 其他附加信息
