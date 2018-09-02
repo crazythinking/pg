@@ -8,11 +8,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.file.LineCallbackHandler;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Optional;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pg.batch.entity.model.BtSysChecklist;
@@ -29,6 +32,8 @@ import net.engining.pg.batch.sdk.file.FlatFileHeader;
  *
  */
 public class FileHeaderLineCallbackHandler implements LineCallbackHandler {
+	
+	private static final Logger log = LoggerFactory.getLogger(FileHeaderLineCallbackHandler.class);
 
 	@PersistenceContext
 	private EntityManager em;
@@ -75,39 +80,44 @@ public class FileHeaderLineCallbackHandler implements LineCallbackHandler {
 							qCactSysChecklist.bizDate.eq(bizDate))
 					.fetchOne();
 
-			// 保存文件Header数据
-			if (headerType.equals(FlatFileHeader.Type.SimpleInteger)) {
-				fileHeader = new FlatFileHeader();
-				fileHeader.setTotalLines(Integer.parseInt(line));
+			//如果存在相应的检查项，则记录头数据，否则忽略
+			if(Optional.fromNullable(cactSysChecklist).isPresent()){
+				// 保存文件Header数据
+				if (headerType.equals(FlatFileHeader.Type.SimpleInteger)) {
+					fileHeader = new FlatFileHeader();
+					fileHeader.setTotalLines(Integer.parseInt(line));
 
-			}
-			else if (headerType.equals(FlatFileHeader.Type.SimpleString)) {
-				fileHeader = new FlatFileHeader();
-				String[] head = StringUtils.split(line, delimiter);
-				fileHeader.setHeadContent(JSON.toJSONString(head));
-
-			}
-			else if (headerType.equals(FlatFileHeader.Type.JsonString)) {
-				fileHeader = new FlatFileHeader();
-				fileHeader.setHeadContent(line);
-			}
-
-			//将文件头数据存入，以备后用
-			if (fileHeader != null) {
-				List<FlatFileHeader> list = new ArrayList<FlatFileHeader>();
-				
-				if (cactSysChecklist.getCheckBizData() != null) {
-					//有数据的情况，往后追加
-					list = JSONObject.parseArray(cactSysChecklist.getCheckBizData(), FlatFileHeader.class);
-					list.add(fileHeader);
-					cactSysChecklist.setCheckBizData(JSON.toJSONString(list));
 				}
-				else {
-					list.add(fileHeader);
-					cactSysChecklist.setCheckBizData(JSON.toJSONString(list));
+				else if (headerType.equals(FlatFileHeader.Type.SimpleString)) {
+					fileHeader = new FlatFileHeader();
+					String[] head = StringUtils.split(line, delimiter);
+					fileHeader.setHeadContent(JSON.toJSONString(head));
+
+				}
+				else if (headerType.equals(FlatFileHeader.Type.JsonString)) {
+					fileHeader = new FlatFileHeader();
+					fileHeader.setHeadContent(line);
+				}
+
+				//将文件头数据存入，以备后用
+				if (fileHeader != null) {
+					List<FlatFileHeader> list = new ArrayList<FlatFileHeader>();
+					
+					if (cactSysChecklist.getCheckBizData() != null) {
+						//有数据的情况，往后追加
+						list = JSONObject.parseArray(cactSysChecklist.getCheckBizData(), FlatFileHeader.class);
+						list.add(fileHeader);
+						cactSysChecklist.setCheckBizData(JSON.toJSONString(list));
+					}
+					else {
+						list.add(fileHeader);
+						cactSysChecklist.setCheckBizData(JSON.toJSONString(list));
+					}
 				}
 			}
-
+			else {
+				log.debug("not have available check list for this, ignore the file header data");
+			}
 		}
 	}
 
