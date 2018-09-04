@@ -48,6 +48,11 @@ public enum ErrorCode implements BaseEnum<ErrorCode, String>
 	 */
 	Other("9000","其它异常非系统错误"),
 	
+	/**
+	 * 系统繁忙
+	 */
+	SysBusy("8900","系统繁忙，请稍后再试"),
+	
 	;
 	
 	private final String value;

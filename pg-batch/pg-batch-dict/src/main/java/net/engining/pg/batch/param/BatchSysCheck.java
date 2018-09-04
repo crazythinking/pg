@@ -34,17 +34,6 @@ public class BatchSysCheck implements Serializable{
 	@PropertyInfo(name="检查项类型", length=30)
     public String checkListType;
     
-    /**
-     * 待检查次数
-     */
-    @PropertyInfo(name="待检查次数", length=10)
-    public int checkTimes;
-    
-    /**
-     * 状态(WAIT|待处理，SUCCESS|处理成功，FAILED|处理失败)
-     */
-    @PropertyInfo(name="状态", length=10)
-    public CheckStatusDef checkStatus;
     
     /**
      * 是否可跳过

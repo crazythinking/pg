@@ -34,7 +34,7 @@ public class ExceptionUtilsExt extends ExceptionUtils{
 	public static void main(String[] args) {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
-		Exception ex = new Exception("test");
+		Exception ex = new NullPointerException();
 		ExceptionUtils.printRootCauseStackTrace(ex.getCause(), printWriter);
 		System.out.println(StringUtils.CR+StringUtils.LF+stringWriter.toString()+StringUtils.CR+StringUtils.LF);
 	}

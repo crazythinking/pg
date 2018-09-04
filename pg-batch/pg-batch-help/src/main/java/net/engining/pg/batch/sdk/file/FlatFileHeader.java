@@ -29,7 +29,7 @@ public class FlatFileHeader implements Serializable {
 	/**
 	 * 明细记录总行数
 	 */
-	private int totalLines;
+	private int totalLines = 0;
 	
 	private String headContent;
 

@@ -2,6 +2,8 @@ package net.engining.pg.batch.sdk.inter;
 
 import java.util.Date;
 
+import net.engining.pg.batch.enums.CheckStatusDef;
+
 /**
  * 批量系统检查项服务接口，由具体的业务端根据实际实现
  * @author luxue
@@ -22,5 +24,5 @@ public interface BtSysCheckListInterface {
 	 * 根据主键定位到某个检查项，并根据该数据决定最终检查项状态，然后更新该数据
 	 * @param seq
 	 */
-	public void checkBtSysCheckListItem(Integer seq);
+	public void checkBtSysCheckListItem(Integer seq, CheckStatusDef checkStatusDef);
 }

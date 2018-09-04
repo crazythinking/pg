@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import net.engining.pg.batch.entity.model.BtSysChecklist;
@@ -61,9 +62,9 @@ public class FileHeaderLineCallbackHandler implements LineCallbackHandler {
 
 	private Date bizDate;
 
-	private FlatFileHeader fileHeader;
-
 	private FlatFileHeader.Type headerType;
+	
+	private FileHeaderLineParser fileHeaderLineParser;
 
 	@Override
 	@Transactional
@@ -82,6 +83,7 @@ public class FileHeaderLineCallbackHandler implements LineCallbackHandler {
 
 			//如果存在相应的检查项，则记录头数据，否则忽略
 			if(Optional.fromNullable(cactSysChecklist).isPresent()){
+				FlatFileHeader fileHeader = null;
 				// 保存文件Header数据
 				if (headerType.equals(FlatFileHeader.Type.SimpleInteger)) {
 					fileHeader = new FlatFileHeader();
@@ -92,11 +94,15 @@ public class FileHeaderLineCallbackHandler implements LineCallbackHandler {
 					fileHeader = new FlatFileHeader();
 					String[] head = StringUtils.split(line, delimiter);
 					fileHeader.setHeadContent(JSON.toJSONString(head));
+					Preconditions.checkNotNull(fileHeaderLineParser, "the FlatFileHeader.Type=SimpleString, this fileHeaderLineParser cannot be null");
+					fileHeader = fileHeaderLineParser.parser(fileHeader);
 
 				}
 				else if (headerType.equals(FlatFileHeader.Type.JsonString)) {
 					fileHeader = new FlatFileHeader();
 					fileHeader.setHeadContent(line);
+					Preconditions.checkNotNull(fileHeaderLineParser, "the FlatFileHeader.Type=JsonString, this fileHeaderLineParser cannot be null");
+					fileHeader = fileHeaderLineParser.parser(fileHeader);
 				}
 
 				//将文件头数据存入，以备后用
@@ -119,6 +125,20 @@ public class FileHeaderLineCallbackHandler implements LineCallbackHandler {
 				log.debug("not have available check list for this, ignore the file header data");
 			}
 		}
+	}
+
+	/**
+	 * @return the fileHeaderLineProcess
+	 */
+	public FileHeaderLineParser getFileHeaderLineProcess() {
+		return fileHeaderLineParser;
+	}
+
+	/**
+	 * @param fileHeaderLineProcess the fileHeaderLineProcess to set
+	 */
+	public void setFileHeaderLineProcess(FileHeaderLineParser fileHeaderLineProcess) {
+		this.fileHeaderLineParser = fileHeaderLineProcess;
 	}
 
 	public void setInspectionCd(String inspectionCd) {
