@@ -76,7 +76,7 @@ public class NestGlobalControllerExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	public BaseResponseBean unknownException(Exception ex) {
 		//不可预料的异常，需要打印错误堆栈
-		dump(ex.getCause());
+		ExceptionUtilsExt.dump(ex);
 		return setupReturn(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
 	}
 
@@ -89,10 +89,6 @@ public class NestGlobalControllerExceptionHandler {
 		baseResponseBean.setReturnDesc(msg);
 		
 		return baseResponseBean;
-	}
-	
-	private void dump(Throwable t){
-		ExceptionUtilsExt.dump(t);
 	}
 	
 }

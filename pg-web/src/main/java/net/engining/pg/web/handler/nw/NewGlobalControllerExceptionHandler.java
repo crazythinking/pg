@@ -78,7 +78,7 @@ public class NewGlobalControllerExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	public <H,T> NewWebCommonResponse<H,T> unknownException(Exception ex) {
 		//不可预料的异常，需要打印错误堆栈
-		dump(ex.getCause());
+		ExceptionUtilsExt.dump(ex);
 		return setupReturn(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
 	}
 
@@ -91,10 +91,6 @@ public class NewGlobalControllerExceptionHandler {
 		}
 		
 		return new NewWebCommonResponseBuilder<H,T>().build().setStatusCode(errorCode).setStatusDesc(msg);
-	}
-	
-	private void dump(Throwable t){
-		ExceptionUtilsExt.dump(t);
 	}
 	
 }

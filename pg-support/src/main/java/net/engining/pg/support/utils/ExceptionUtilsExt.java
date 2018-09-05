@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
+import net.engining.pg.support.core.exception.ErrorCode;
+import net.engining.pg.support.core.exception.ErrorMessageException;
+
 /**
  * @author luxue
  *
@@ -34,8 +37,8 @@ public class ExceptionUtilsExt extends ExceptionUtils{
 	public static void main(String[] args) {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
-		Exception ex = new NullPointerException();
-		ExceptionUtils.printRootCauseStackTrace(ex.getCause(), printWriter);
+		Exception ex = new ErrorMessageException(ErrorCode.BadRequest, "exception test####################");
+		ExceptionUtils.printRootCauseStackTrace(ex, printWriter);
 		System.out.println(StringUtils.CR+StringUtils.LF+stringWriter.toString()+StringUtils.CR+StringUtils.LF);
 	}
 }
