@@ -1,6 +1,3 @@
-/**
- * 
- */
 package net.engining.pg.support.utils;
 
 import java.io.PrintWriter;
@@ -28,17 +25,17 @@ public class ExceptionUtilsExt extends ExceptionUtils{
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		if(Optional.fromNullable(t).isPresent()){
-			t.printStackTrace(printWriter);
+//			t.printStackTrace(printWriter);
+			printRootCauseStackTrace(t, printWriter);
 			log.error(StringUtils.CR+StringUtils.LF+stringWriter.toString()+StringUtils.CR+StringUtils.LF);
 		}
 		
 	}
 	
 	public static void main(String[] args) {
-		StringWriter stringWriter = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(stringWriter);
 		Exception ex = new ErrorMessageException(ErrorCode.BadRequest, "exception test####################");
-		ExceptionUtils.printRootCauseStackTrace(ex, printWriter);
-		System.out.println(StringUtils.CR+StringUtils.LF+stringWriter.toString()+StringUtils.CR+StringUtils.LF);
+//		ExceptionUtils.printRootCauseStackTrace(ex, printWriter);
+//		System.out.println(StringUtils.CR+StringUtils.LF+stringWriter.toString()+StringUtils.CR+StringUtils.LF);
+		ExceptionUtilsExt.dump(ex);
 	}
 }
