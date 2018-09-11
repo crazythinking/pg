@@ -61,6 +61,8 @@ public class NestGlobalControllerExceptionHandler {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public BaseResponseBean IllegalArgumentException(ErrorMessageException ex) {
+		log.error("ERROR_CODE:{}, have exceptions as flowing: ",ex.getErrorCode().getValue());
+		ExceptionUtilsExt.dump(ex);
 		return setupReturn(ex.getErrorCode().getValue(), ex.getErrorCode().getLabel()+" : "+ex.getMessage());
 	}
 
@@ -76,6 +78,7 @@ public class NestGlobalControllerExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	public BaseResponseBean unknownException(Exception ex) {
 		//不可预料的异常，需要打印错误堆栈
+		log.error("ERROR_CODE:{}, have exceptions as flowing: ",ErrorCode.SystemError.getValue());
 		ExceptionUtilsExt.dump(ex);
 		return setupReturn(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
 	}
