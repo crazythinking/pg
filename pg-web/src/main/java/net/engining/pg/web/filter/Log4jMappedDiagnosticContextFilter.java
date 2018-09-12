@@ -66,9 +66,6 @@ public class Log4jMappedDiagnosticContextFilter extends AbstractRequestLoggingFi
 			} else {
 				ThreadContext.put("req.loginId", "anonymous");
 			}
-		} else {
-			ThreadContext.put("req.sessionId", "");
-			ThreadContext.put("req.loginId", "");
 		}
 		ThreadContext.put("req.hostname", request.getServerName());
 		//请求的uri
