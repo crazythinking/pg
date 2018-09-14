@@ -80,7 +80,7 @@ public class SnowflakeSequenceID {
 		}
 		this.workerId = workerId;
 		this.datacenterId = datacenterId;
-		logger.info(
+		logger.debug(
 				"worker starting. timestamp left shift {}, datacenter id bits {}, worker id bits {}, sequence bits {}, workerid {}, datacenterId {}",
 				timestampLeftShift, datacenterIdBits, workerIdBits, sequenceBits, workerId, datacenterId);
 	}
@@ -89,7 +89,7 @@ public class SnowflakeSequenceID {
 	 * 默认构造函数通过MAC产生worker id
 	 */
 	public SnowflakeSequenceID(){
-		logger.info("将使用计算产生worker id，data center Id 默认为0");
+		logger.debug("将使用计算产生worker id，data center Id 默认为0");
 		genWorkerIdAndDatacenterIdByMAC();
 	}
 
@@ -113,10 +113,10 @@ public class SnowflakeSequenceID {
 			logger.error("获取本机MAC地址异常：{}", e.getMessage());
 		}
 		
-		logger.info("获取本机的MAC为{}", sb.toString());
+		logger.debug("获取本机的MAC为{}", sb.toString());
 		Date minDate = new Date(0);
 		workerId = (workerId * 31 + (minDate.getTime() >>> 4)) & maxWorkerId;
-		logger.info(
+		logger.debug(
 				"worker starting. timestamp left shift {}, datacenter id bits {}, worker id bits {}, sequence bits {}, workerid {}, datacenterId {}",
 				timestampLeftShift, datacenterIdBits, workerIdBits, sequenceBits, workerId, datacenterId);
 
