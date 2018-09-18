@@ -111,7 +111,7 @@ public class EntityMojo extends AbstractMojo {
 		generators.add(new Entity2MapGenerator());
 		generators.add(new EntityConstantGenerator());
 		generators.add(new SequenceHomeGenerator());
-		generators.add(new AllFieldMappingsGenerator());
+//		generators.add(new AllFieldMappingsGenerator());
 	}
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -578,6 +578,12 @@ public class EntityMojo extends AbstractMojo {
 						entityClass.addImportedType(new FullyQualifiedJavaType("org.springframework.data.annotation.LastModifiedDate"));
 						f.addAnnotation("@LastModifiedDate");
 					}
+				}
+				
+				//del_flag
+				if(col.isTransient()){
+					entityClass.addImportedType(new FullyQualifiedJavaType("javax.persistence.Transient"));
+					f.addAnnotation("@Transient");
 				}
 
 				// Version

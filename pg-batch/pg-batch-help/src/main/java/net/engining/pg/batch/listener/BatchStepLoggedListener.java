@@ -11,6 +11,9 @@ import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 
+import net.engining.pg.support.core.exception.ErrorCode;
+import net.engining.pg.support.utils.ExceptionUtilsExt;
+
 public class BatchStepLoggedListener implements StepExecutionListener {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -28,11 +31,10 @@ public class BatchStepLoggedListener implements StepExecutionListener {
 			logger.info(stepExecution.getStepName() + " 执行结束" + dateFormat.format(new Date()));
 		}
 		else {
-			logger.info(stepExecution.getStepName() + " 执行出错" + dateFormat.format(new Date()));
-			
+			logger.error(stepExecution.getStepName() + " 执行出错" + dateFormat.format(new Date()));
+			logger.error("ERROR_CODE:{}, have exceptions as flowing: ",ErrorCode.SystemError.getValue());
 			for(Throwable t : stepExecution.getFailureExceptions()){
-				logger.error(t.getMessage());
-				t.printStackTrace();
+				ExceptionUtilsExt.dump(t);
 			}
 		}
 		

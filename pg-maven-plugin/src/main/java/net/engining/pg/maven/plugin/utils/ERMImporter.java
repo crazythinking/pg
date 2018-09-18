@@ -242,7 +242,7 @@ public class ERMImporter {
 					column.setJavaType(fqjtInteger);
 					column.setLength(9);
 				}
-				else if ("bigint".equals(type))
+				else if ("bigint".equals(type) || "bigint(n)".equals(type))
 				{
 					column.setJavaType(new FullyQualifiedJavaType("java.lang.Long"));
 					column.setLength(18);
@@ -298,6 +298,10 @@ public class ERMImporter {
 					logger.warn(MessageFormat.format("建议不要使用numeric，用decimal代替[{0}], {1}, {2}", type, column.getDbName(), table.getDbName()));
 				if (type.startsWith("datetime"))
 					logger.warn(MessageFormat.format("建议不要使用datetime，用timestamp代替[{0}], {1}, {2}", type, column.getDbName(), table.getDbName()));
+				
+				
+				//JPA忽略该字段
+				column.setTransient("DEL_FLAG".equalsIgnoreCase(column.getDbName()));
 				
 				//处理Version
 				column.setVersion(

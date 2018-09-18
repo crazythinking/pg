@@ -28,7 +28,23 @@ public class Column {
 	private boolean lazy = false;
 	private boolean identity = false;
 	private boolean version = false;
+	/**
+	 * 该字段是否到数据库表的映射
+	 */
+	private boolean isTransient = false;
 	
+	/**
+	 * @return the isTransient
+	 */
+	public boolean isTransient() {
+		return isTransient;
+	}
+	/**
+	 * @param isTransient the isTransient to set
+	 */
+	public void setTransient(boolean isTransient) {
+		this.isTransient = isTransient;
+	}
 	/**
 	 * 用于客户端国际化指示使用，目前不生成U对象，可能不再需要
 	 */
