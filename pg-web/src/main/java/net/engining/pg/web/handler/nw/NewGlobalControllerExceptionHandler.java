@@ -63,7 +63,7 @@ public class NewGlobalControllerExceptionHandler {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
 	public <H,T> NewWebCommonResponse<H,T> IllegalArgumentException(ErrorMessageException ex) {
-		log.error("ERROR_CODE:{}, have exceptions as flowing: ",ex.getErrorCode().getValue());
+		log.error("ERROR_CODE:{}, ERROR_DESC:{}, have exceptions as flowing: ",ex.getErrorCode().getValue(), ex.getErrorCode().getLabel());
 		ExceptionUtilsExt.dump(ex);
 		return setupReturn(ex.getErrorCode().getValue(), ex.getMessage());
 	}
@@ -80,7 +80,7 @@ public class NewGlobalControllerExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	public <H,T> NewWebCommonResponse<H,T> unknownException(Exception ex) {
 		//不可预料的异常，需要打印错误堆栈
-		log.error("ERROR_CODE:{}, have exceptions as flowing: ",ErrorCode.SystemError.getValue());
+		log.error("ERROR_CODE:{}, ERROR_DESC:{}, have exceptions as flowing: ",ErrorCode.SystemError.getValue(), ErrorCode.SystemError.getLabel());
 		ExceptionUtilsExt.dump(ex);
 		return setupReturn(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
 	}
