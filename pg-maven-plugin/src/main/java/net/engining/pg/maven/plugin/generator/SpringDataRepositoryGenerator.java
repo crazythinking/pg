@@ -22,15 +22,9 @@ import net.engining.pg.maven.plugin.meta.Table;
  */
 public class SpringDataRepositoryGenerator extends AbstractGenerator
 {
-	private String targetPackage;
-	
 	private static final String NAME_PREFIX = "R";
 	
-	public SpringDataRepositoryGenerator(String targetPackage)
-	{
-		this.targetPackage = targetPackage;
-	}
-	
+	@Override
 	public List<CompilationUnit> generateAdditionalClasses(Table table, Database database)
 	{
 //		import org.springframework.data.querydsl.QueryDslPredicateExecutor;
@@ -42,8 +36,7 @@ public class SpringDataRepositoryGenerator extends AbstractGenerator
 //			
 //			List<Person> findByAgeLessThan(int age);
 //		}
-		Interface inter = new Interface(new FullyQualifiedJavaType(
-				targetPackage + "." + NAME_PREFIX + table.getJavaClass().getShortName()));
+		Interface inter = new Interface(new FullyQualifiedJavaType(this.getTargetPackage() + ".repositroy." + NAME_PREFIX + table.getJavaClass().getShortName()));
 		inter.setVisibility(JavaVisibility.PUBLIC);
 		
 		FullyQualifiedJavaType fqjtCrudRepository = new FullyQualifiedJavaType("org.springframework.data.jpa.repository.JpaRepository");

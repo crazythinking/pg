@@ -44,12 +44,12 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import net.engining.pg.maven.plugin.generator.AllFieldMappingsGenerator;
 import net.engining.pg.maven.plugin.generator.Entity2MapGenerator;
 import net.engining.pg.maven.plugin.generator.EntityConstantGenerator;
 import net.engining.pg.maven.plugin.generator.EqualsHashCodeGenerator;
 import net.engining.pg.maven.plugin.generator.FillDefaultValuesGenerator;
 import net.engining.pg.maven.plugin.generator.SequenceHomeGenerator;
+import net.engining.pg.maven.plugin.generator.SpringDataRepositoryGenerator;
 import net.engining.pg.maven.plugin.generator.ToStringGenerator;
 import net.engining.pg.maven.plugin.interfaces.Generator;
 import net.engining.pg.maven.plugin.meta.Column;
@@ -111,6 +111,7 @@ public class EntityMojo extends AbstractMojo {
 		generators.add(new Entity2MapGenerator());
 		generators.add(new EntityConstantGenerator());
 		generators.add(new SequenceHomeGenerator());
+		generators.add(new SpringDataRepositoryGenerator());
 //		generators.add(new AllFieldMappingsGenerator());
 	}
 
