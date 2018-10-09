@@ -1,5 +1,7 @@
 package net.engining.pg.web.filter;
 
+import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -67,6 +69,10 @@ public class Log4jMappedDiagnosticContextFilter extends AbstractRequestLoggingFi
 				ThreadContext.put("req.loginId", "anonymous");
 			}
 		}
+		else {
+			ThreadContext.put("req.uuId", UUID.randomUUID().toString());
+		}
+		
 		ThreadContext.put("req.hostname", request.getServerName());
 		//请求的uri
 		ThreadContext.put("requestUri", request.getRequestURI());
