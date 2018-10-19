@@ -85,6 +85,10 @@ public class MultiFilesOkCheckTasklet implements Tasklet {
 		List<Resource> okResourcesLs = Arrays.asList(okResources);
 		List<Resource> dataResourcesLs = Arrays.asList(dataResources);
 		
+		if(strict && okResourcesLs.isEmpty()){
+			throw new ErrorMessageException(ErrorCode.CheckError, "ok标识文件与data文件没有全部到达！");
+		}
+		
 		//ok标识文件名list，不含扩展名
 		List<String> okResourceFileNames = Lists.transform(okResourcesLs, new Function<Resource, String>() {
 
