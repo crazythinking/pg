@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>net.engining.pg</groupId>
 		<artifactId>pg-parent</artifactId>
-		<version>3.3.0.RELEASE</version>
+		<version>3.3.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>pg-support</artifactId>
@@ -20,12 +21,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
-		
+
 		<!-- XStream支持的可选项; 参数体系对象与xml互转 -->
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
@@ -61,20 +62,20 @@
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
 		</dependency>
-		
+
 		<!-- 三方工具 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
 		<dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-        </dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
@@ -83,11 +84,15 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
-		
+
 		<!-- ServiceDaemon -->
 		<dependency>
 			<groupId>commons-daemon</groupId>
 			<artifactId>commons-daemon</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
 		</dependency>
 
 		<dependency>
@@ -99,7 +104,7 @@
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 		</dependency>
-		
+
 		<!-- Spring 测试支持 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -122,28 +127,27 @@
 			<artifactId>spring-batch-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 	</dependencies>
 	<build>
 		<plugins>
-			<!-- spring-boot-configuration-processor 会造成造成aspectj-maven-plugin插件进行AJC的时候报错;	<br>
- 							root cause: https://bugs.eclipse.org/bugs/show_bug.cgi?id=530665	<br>
- 							Perhaps fix this at : https://github.com/spring-projects/spring-boot/issues/4847;
- 							暂时的解决方案是如下maven-compiler-plugin配置；交给aspectj-maven-plugin去执行；
- 							You could also let the AspectJ plugin run all the processing and disable annotation processing in the maven-compiler-plugin configuration-->
+			<!-- spring-boot-configuration-processor 会造成造成aspectj-maven-plugin插件进行AJC的时候报错; 
+				<br> root cause: https://bugs.eclipse.org/bugs/show_bug.cgi?id=530665 <br> 
+				Perhaps fix this at : https://github.com/spring-projects/spring-boot/issues/4847; 
+				暂时的解决方案是如下maven-compiler-plugin配置；交给aspectj-maven-plugin去执行； You could also 
+				let the AspectJ plugin run all the processing and disable annotation processing 
+				in the maven-compiler-plugin configuration -->
 			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-compiler-plugin</artifactId>
-			    <configuration>
-			        <proc>none</proc>
-			    </configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<proc>none</proc>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<!-- <configuration>
-					<sources/>
-				</configuration> -->
+				<!-- <configuration> <sources/> </configuration> -->
 			</plugin>
 		</plugins>
 	</build>

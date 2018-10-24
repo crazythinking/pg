@@ -14,6 +14,7 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.file.FlatFileParseException;
+import org.springframework.transaction.annotation.Transactional;
 
 import net.engining.pg.batch.entity.model.BtImportException;
 import net.engining.pg.support.core.exception.ErrorMessageException;
@@ -43,6 +44,7 @@ public class BatchStepFlatFileErroredListener implements StepExecutionListener {
 	}
 
 	@Override
+	@Transactional
 	public ExitStatus afterStep(StepExecution stepExecution) {
 		ExecutionContext executionContext = stepExecution.getExecutionContext();
 		

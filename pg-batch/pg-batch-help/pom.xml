@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>net.engining.pg</groupId>
 		<artifactId>pg-batch</artifactId>
-		<version>3.3.0.RELEASE</version>
+		<version>3.3.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	
