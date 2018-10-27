@@ -32,7 +32,7 @@ public class OracleSequenceOperator implements SequenceOperator {
 	@Override
 	public BigDecimal getNextValue(String sequenceName) {
 		Object obj = entityManager.unwrap(Session.class)
-				.createSQLQuery(MessageFormat.format("select {0}.nextval for dual", sequenceName))
+				.createNativeQuery(MessageFormat.format("select {0}.nextval for dual", sequenceName))
 				.addScalar("seq", new BigDecimalType()).uniqueResult();
 		assert obj instanceof BigDecimal;
 		return (BigDecimal) obj;

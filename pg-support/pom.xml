@@ -30,6 +30,7 @@
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
+			<version>1.4.10</version>
 		</dependency>
 
 		<!-- Spring data -->
@@ -53,7 +54,7 @@
 		</dependency>
 		<!-- 利用hibernate-validator做字段校验 -->
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 		<!-- querydsl -->
@@ -98,6 +99,7 @@
 		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
+			<version>1</version>
 		</dependency>
 		
 		<!-- Spring 测试支持 -->

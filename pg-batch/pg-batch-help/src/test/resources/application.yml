@@ -21,9 +21,8 @@ spring:
     properties:
       hibernate.format_sql: true
   batch:
-    initializer:
-      #是否初始化Spring Batch的数据库
-      enabled: false
+    #是否初始化Spring Batch的数据库
+    initialize-schema: never
     job:
       #是否自动执行定义的job    
       enabled: false

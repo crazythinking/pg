@@ -47,7 +47,7 @@ public class SpringDataRepositoryGenerator extends AbstractGenerator
 		inter.addImportedType(fqjtCrudRepository);
 		inter.addSuperInterface(fqjtCrudRepository);
 		
-		FullyQualifiedJavaType fqjtQueryDsl = new FullyQualifiedJavaType("org.springframework.data.querydsl.QueryDslPredicateExecutor");
+		FullyQualifiedJavaType fqjtQueryDsl = new FullyQualifiedJavaType("org.springframework.data.querydsl.QuerydslPredicateExecutor");
 		fqjtQueryDsl.addTypeArgument(table.getJavaClass());
 		inter.addImportedType(fqjtQueryDsl);
 		inter.addSuperInterface(fqjtQueryDsl);

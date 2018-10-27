@@ -27,12 +27,13 @@
 			<scope>provided</scope>	<!-- 不强制依赖传递 -->
 		</dependency>
 		<dependency>
-			<groupId>commons-collections</groupId>
-  			<artifactId>commons-collections</artifactId>
-		</dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
 		<dependency><!-- 依赖注入，非直接引用，但LocalCachedParameterFacility再maven编译时，没有会报错 -->
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
+			<version>1</version>
 		</dependency>
 		
 		<!-- Spring 测试支持 -->

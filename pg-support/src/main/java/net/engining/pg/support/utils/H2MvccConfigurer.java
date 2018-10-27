@@ -14,8 +14,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseConfigurer;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.ClassUtils;
 
-import com.google.common.base.Throwables;
-
 /**
  * 参考 org.springframework.jdbc.datasource.embedded.H2EmbeddedDatabaseConfigurer，在url里加入了mvcc，以避免锁表的问题
  * @author binarier
@@ -37,7 +35,7 @@ public class H2MvccConfigurer implements EmbeddedDatabaseConfigurer {
 		}
 		catch (Exception e)
 		{
-			Throwables.propagate(e);
+			throw new RuntimeException(e);
 		}
 	}
 

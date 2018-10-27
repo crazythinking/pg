@@ -75,11 +75,11 @@ public class BeanUtilsExt extends PropertyUtilsBean {
                 }
             }
         } else if (source instanceof Map) { // Map
-            Iterator names = ((Map) source).keySet().iterator();
+            Iterator<?> names = ((Map<?, ?>) source).keySet().iterator();
             while (names.hasNext()) {
                 String name = (String) names.next();
                 if (PropertyUtils.isWriteable(target, name)) {
-                    Object value = ((Map) source).get(name);
+                    Object value = ((Map<?, ?>) source).get(name);
                     try {
                         getInstance().setSimpleProperty(target, name, value);
                     } catch (Exception e) {

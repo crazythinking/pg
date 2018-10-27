@@ -11,7 +11,6 @@ import javax.persistence.PersistenceContext;
 
 import org.hibernate.Session;
 import org.hibernate.type.BigDecimalType;
-import org.springframework.stereotype.Component;
 
 import net.engining.pg.support.db.DbType;
 
@@ -37,7 +36,7 @@ public class DB2SequenceOperator implements SequenceOperator {
 	public BigDecimal getNextValue(String sequenceName) {
 		// 临时DB2解决方案
 		Object obj = entityManager.unwrap(Session.class)
-				.createSQLQuery(
+				.createNativeQuery(
 						MessageFormat.format("select nextval for {0} as seq from SYSIBM.SYSDUMMY1", sequenceName))
 				.addScalar("seq", new BigDecimalType()).uniqueResult();
 		assert obj instanceof BigDecimal;

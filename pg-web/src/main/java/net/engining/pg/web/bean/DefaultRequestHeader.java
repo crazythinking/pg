@@ -3,7 +3,7 @@ package net.engining.pg.web.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 import net.engining.pg.web.AsynInd;
 
