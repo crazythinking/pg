@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Required;
  * @author licj
  *
  */
+@Deprecated
 public class PgBatchStepListener implements StepExecutionListener {
 	
 	private PgBatchTransactionManager transactionManager;

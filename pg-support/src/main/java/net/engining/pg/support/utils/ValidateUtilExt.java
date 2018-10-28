@@ -19,52 +19,98 @@ import org.apache.commons.lang3.Validate;
  */
 public abstract class ValidateUtilExt extends Validate {
 
-    //邮箱
+    /**
+     * 邮箱
+     */
     private static final String REG_EMAIL = "^[\\w-]+(\\.[\\w-]+)*@[\\w-]+(\\.[\\w-]+)+$";
-    //固话
+    /**
+     * 固话
+     */
     private static final String REG_PHONE = "\\d{3}-\\d{8}|\\d{4}-\\d{7}";
-    //手机号码
+    /**
+     * 手机号码
+     */
     private static final String REG_MOBILE = "0{0,1}(13[4-9]|15[7-9]|15[0-2]|18[7-9])[0-9]{8}";
-    //url
+    /**
+     * url
+     */
     private static final String REG_URL = "^((https|http|ftp|rtsp|mms)://)?[A-Za-z0-9]+\\.[A-Za-z0-9]+[\\/=\\?%\\-&_~`@\\':+!]*([^<>\\\"\\\"])*$";
-    //身份证号码
+    /**
+     * 身份证号码
+     */
     private static final String REG_IDCARD = "\\d{15}|\\d{18}";
-    //是否是数字
+    /**
+     * 是否是数字
+     */
     private static final String REG_NUMBER = "\\d+";
-    //邮编
+    /**
+     * 邮编
+     */
     private static final String REG_ZIP = "^[1-9]\\d{5}$";
-    //QQ
+    /**
+     * QQ
+     */
     private static final String REG_QQ = "[1-9]\\d{4,13}";
-    //整数
+    /**
+     * 整数
+     */
     private static final String REG_INTEGER = "[-\\+]?\\d+";
-    //正整数
+    /**
+     * 正整数
+     */
     private static final String REG_INTEGER_P = "^[1-9]\\d*$";
-    //负整数
+    /**
+     * 负整数
+     */
     private static final String REG_INTEGER_N = "^-[1-9]\\d*$";
-    //浮点数
+    /**
+     * 浮点数
+     */
     private static final String REG_FLOAT = "^-?([1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*|0?\\.0+|0)$";
-    //正浮点数
+    /**
+     * 正浮点数
+     */
     private static final String REG_FLOAT_P = "^[1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*$";
-    //负浮点数
+    /**
+     * 负浮点数
+     */
     private static final String REG_FLOAT_N = "^-([1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*)$";
-    //小数
+    /**
+     * 小数
+     */
     private static final String REG_DOUBLE = "[-\\+]?\\d+(\\.\\d+)?";
-    //英文
+    /**
+     * 英文
+     */
     private static final String REG_ENGLISH = "^[A-Za-z]+$";
-    //大写英文
+    /**
+     * 大写英文
+     */
     private static final String REG_ENGLISH_UPPER = "^[A-Z]+$";
-    //小写英文
+    /**
+     * 小写英文
+     */
     private static final String REG_ENGLISH_LOWER = "^[a-z]+$";
-    //英文字母或数字
+    /**
+     * 英文字母或数字
+     */
     private static final String REG_ENGLISH_DIGIT = "^[A-Za-z0-9]+$";
-    //数字或字母或下划线
+    /**
+     * 数字或字母或下划线
+     */
     private static final String REG_ENGLISH_DIGIT_LINE = "^\\w+$";
-    //中文
+    /**
+     * 中文
+     */
     private static final String REG_CHINESE = "^[\\u0391-\\uFFE5]+$";
-    //IP
+    /**
+     * IP
+     */
     private static final String REG_IP =
         "(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])\\.(\\d{1,2}|1\\d\\d|2[0-4]\\d|25[0-5])";
-    //金额
+    /**
+     * 金额
+     */
     private static final String REG_MONEY = "^(([1-9]\\\\d{0,9})|0)(\\\\.\\\\d{1,2})?$";
 
     /**
@@ -168,7 +214,57 @@ public abstract class ValidateUtilExt extends Validate {
 
         isTrue(StringUtils.isNotEmpty(integer) && matcher.matches(), "非整形数字.");
     }
+    
+    /**
+     * 判断是否是正整数
+     */
+    public static void isPositiveInteger(String integer) {
+        Pattern patter = Pattern.compile(REG_INTEGER_P, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patter.matcher(integer);
 
+        isTrue(StringUtils.isNotEmpty(integer) && matcher.matches(), "非正整形数字.");
+    }
+    
+    /**
+     * 判断是否是负整数
+     */
+    public static void isNegativeInteger(String integer) {
+        Pattern patter = Pattern.compile(REG_INTEGER_N, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patter.matcher(integer);
+
+        isTrue(StringUtils.isNotEmpty(integer) && matcher.matches(), "非负整形数字.");
+    }
+
+    /**
+     * 判断是否是浮点数
+     */
+    public static void isFloat(String str) {
+        Pattern patter = Pattern.compile(REG_FLOAT, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patter.matcher(str);
+
+        isTrue(StringUtils.isNotEmpty(str) && matcher.matches(), "非浮点数.");
+    }
+    
+    /**
+     * 判断是否是正浮点数
+     */
+    public static void isPositiveFloat(String str) {
+        Pattern patter = Pattern.compile(REG_FLOAT_P, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patter.matcher(str);
+
+        isTrue(StringUtils.isNotEmpty(str) && matcher.matches(), "非正浮点数.");
+    }
+    
+    /**
+     * 判断是否是负浮点数
+     */
+    public static void isNegativeFloat(String str) {
+        Pattern patter = Pattern.compile(REG_FLOAT_N, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patter.matcher(str);
+
+        isTrue(StringUtils.isNotEmpty(str) && matcher.matches(), "非负浮点数.");
+    }
+    
     /**
      * 判断是否是小数
      */
@@ -187,6 +283,46 @@ public abstract class ValidateUtilExt extends Validate {
         Matcher matcher = patter.matcher(english);
 
         isTrue(StringUtils.isNotEmpty(english) && matcher.matches(), "非全为英文字母.");
+    }
+    
+    /**
+     * 判断是否是大写英文
+     */
+    public static void isUpperEnglish(String english) {
+        Pattern patter = Pattern.compile(REG_ENGLISH_UPPER);
+        Matcher matcher = patter.matcher(english);
+
+        isTrue(StringUtils.isNotEmpty(english) && matcher.matches(), "非全为大写英文字母.");
+    }
+    
+    /**
+     * 判断是否是小写英文
+     */
+    public static void isLowerEnglish(String english) {
+        Pattern patter = Pattern.compile(REG_ENGLISH_LOWER);
+        Matcher matcher = patter.matcher(english);
+
+        isTrue(StringUtils.isNotEmpty(english) && matcher.matches(), "非全为小写英文字母.");
+    }
+    
+    /**
+     * 判断是否是英文字母或数字
+     */
+    public static void isEnglishAndDigit(String english) {
+        Pattern patter = Pattern.compile(REG_ENGLISH_DIGIT, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patter.matcher(english);
+
+        isTrue(StringUtils.isNotEmpty(english) && matcher.matches(), "非全为英文字母或数字.");
+    }
+    
+    /**
+     * 判断是否是数字或英文字母或下划线
+     */
+    public static void isEnglishAndDigitAndLine(String english) {
+        Pattern patter = Pattern.compile(REG_ENGLISH_DIGIT_LINE, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patter.matcher(english);
+
+        isTrue(StringUtils.isNotEmpty(english) && matcher.matches(), "非全为数字或英文字母或下划线.");
     }
 
     /**
@@ -211,7 +347,20 @@ public abstract class ValidateUtilExt extends Validate {
 
         isTrue(StringUtils.isNotEmpty(ip) && matcher.matches(), "IP格式错误.");
     }
+    
+    /**
+     * 判断是否金额
+     *
+     * @param ip
+     * @return
+     */
+    public static void isMoney(String money) {
+        Pattern patter = Pattern.compile(REG_MONEY, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = patter.matcher(money);
 
+        isTrue(StringUtils.isNotEmpty(money) && matcher.matches(), "金额格式错误.");
+    }
+    
     /**
      * 检查对象是否是不为null 或 空.
      */

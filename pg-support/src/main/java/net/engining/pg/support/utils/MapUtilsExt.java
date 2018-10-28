@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.Validate;
 
 
@@ -163,11 +162,12 @@ import org.apache.commons.lang3.Validate;
  * </table>
  * </blockquote>
  */
-public final class MapUtilsExt {
+public class MapUtilsExt {
 
-    private MapUtilsExt() {
-        throw new AssertionError("No " + getClass().getName() + " instances for you!");
-    }
+	/**
+	 * <code>MapUtilsExt</code> should not normally be instantiated. Also cannot be extended
+	 */
+	private MapUtilsExt() {}
 
     /**
      * 将多值的<code>arrayValueMap</code> 转成单值的map.

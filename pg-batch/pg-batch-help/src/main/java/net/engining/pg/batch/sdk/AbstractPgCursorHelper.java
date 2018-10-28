@@ -26,7 +26,7 @@ public abstract class AbstractPgCursorHelper<INFO> {
 	 * 根据配置打开游标，按条件打开游标
 	 */
 	public ScrollableResults openCursor(EntityManager em) {
-		HibernateQuery hq = new HibernateQuery(em.unwrap(Session.class));
+		HibernateQuery<INFO> hq = new HibernateQuery<INFO>(em.unwrap(Session.class));
 		cursor = doOpenCursor(hq);
 		return cursor;
 	}
@@ -36,7 +36,7 @@ public abstract class AbstractPgCursorHelper<INFO> {
 	 * @param query
 	 * @return
 	 */
-	protected abstract ScrollableResults doOpenCursor(HibernateQuery query);
+	protected abstract ScrollableResults doOpenCursor(HibernateQuery<INFO> query);
 
 	public ScrollableResults getCursor() {
 		return cursor;

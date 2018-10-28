@@ -70,7 +70,11 @@
 			<artifactId>ibator</artifactId>
 			<version>${ibator.version}</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.6</version>
+		</dependency>
 		<!-- Maven -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>

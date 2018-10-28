@@ -16,6 +16,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @author licj
  *
  */
+@Deprecated
 public class ServiceDaemon implements Daemon {
 	protected static final Logger logger = LoggerFactory.getLogger(ServiceDaemon.class);
 	
@@ -59,6 +60,7 @@ public class ServiceDaemon implements Daemon {
 	 * @param args
 	 * @throws FileNotFoundException 
 	 */
+	@SuppressWarnings("resource")
 	public static void main(String[] args) throws FileNotFoundException {
 		logger.info("系统后台轮询服务正在启动#####################################################################");
 		ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext(getContextFilename(args));

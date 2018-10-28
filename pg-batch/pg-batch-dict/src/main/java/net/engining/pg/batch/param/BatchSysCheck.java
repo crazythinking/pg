@@ -3,7 +3,6 @@ package net.engining.pg.batch.param;
 import java.io.Serializable;
 import java.util.Date;
 
-import net.engining.pg.batch.enums.CheckStatusDef;
 import net.engining.pg.batch.enums.SkipConditionTypeDef;
 import net.engining.pg.support.meta.PropertyInfo;
 

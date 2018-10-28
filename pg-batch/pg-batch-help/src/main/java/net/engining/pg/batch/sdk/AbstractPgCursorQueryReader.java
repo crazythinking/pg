@@ -33,7 +33,7 @@ public abstract class AbstractPgCursorQueryReader<T> implements ItemStreamReader
 	public void open(final ExecutionContext executionContext) throws ItemStreamException {
 		cursorHelper = new AbstractPgCursorHelper<T>() {
 			@Override
-			protected ScrollableResults doOpenCursor(HibernateQuery query) {
+			protected ScrollableResults doOpenCursor(HibernateQuery<T> query) {
 				return AbstractPgCursorQueryReader.this.doOpenCursor(executionContext, query);
 			}
 		};
@@ -91,7 +91,7 @@ public abstract class AbstractPgCursorQueryReader<T> implements ItemStreamReader
 	 * @param query
 	 * @return
 	 */
-	protected abstract ScrollableResults doOpenCursor(ExecutionContext executionContext, HibernateQuery query);
+	protected abstract ScrollableResults doOpenCursor(ExecutionContext executionContext, HibernateQuery<T> query);
 
 	/**
 	 * 每次提交时，供子类把最后处理的一个对象的断点信息写入上下文

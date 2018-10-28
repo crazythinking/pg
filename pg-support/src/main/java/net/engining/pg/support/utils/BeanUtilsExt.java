@@ -113,7 +113,7 @@ public class BeanUtilsExt extends PropertyUtilsBean {
      * @param target 目标Map
      * @param source 源对象
      */
-    public static void copyBean2Map(Map target, Object source) {
+    public static void copyBean2Map(Map<String, Object> target, Object source) {
         PropertyDescriptor[] pds = PropertyUtils.getPropertyDescriptors(source);
         for (int i = 0; i < pds.length; i++) {
             PropertyDescriptor pd = pds[i];
@@ -134,11 +134,11 @@ public class BeanUtilsExt extends PropertyUtilsBean {
      * @param target 目标Bean
      * @param source 源Map
      */
-    public static void copyMap2Bean(Object target, Map source) {
+    public static void copyMap2Bean(Object target, Map<?, ?> source) {
         if ((target == null) || (source == null)) {
             return;
         }
-        Iterator names = source.keySet().iterator();
+        Iterator<?> names = source.keySet().iterator();
         while (names.hasNext()) {
             String name = (String) names.next();
             if (name == null) {
@@ -150,7 +150,7 @@ public class BeanUtilsExt extends PropertyUtilsBean {
                     continue;
                 }
 
-                Class clazz = PropertyUtils.getPropertyType(target, name);
+                Class<?> clazz = PropertyUtils.getPropertyType(target, name);
                 // 属性在Bean中不存在.
                 if (null == clazz) {
                     continue;
@@ -184,11 +184,11 @@ public class BeanUtilsExt extends PropertyUtilsBean {
      * @param source       源Map
      * @param defaultValue 默认值
      */
-    public static void copyMap2Bean(Object target, Map source, String defaultValue) {
+    public static void copyMap2Bean(Object target, Map<?, ?> source, String defaultValue) {
         if ((target == null) || (source == null)) {
             return;
         }
-        Iterator names = source.keySet().iterator();
+        Iterator<?> names = source.keySet().iterator();
         while (names.hasNext()) {
             String name = (String) names.next();
             if (name == null) {
@@ -196,7 +196,7 @@ public class BeanUtilsExt extends PropertyUtilsBean {
             }
             Object value = source.get(name);
             try {
-                Class clazz = PropertyUtils.getPropertyType(target, name);
+                Class<?> clazz = PropertyUtils.getPropertyType(target, name);
                 if (null == clazz) {
                     continue;
                 }
