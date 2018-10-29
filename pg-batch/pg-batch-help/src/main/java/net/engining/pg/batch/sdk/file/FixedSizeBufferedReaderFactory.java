@@ -15,7 +15,7 @@ import org.springframework.core.io.Resource;
  */
 public class FixedSizeBufferedReaderFactory implements BufferedReaderFactory {
 	
-	//5M缓冲区
+	//10M缓冲区
 	private int bufferSize = 10 * 1024 * 1024;
 
 	@Override
