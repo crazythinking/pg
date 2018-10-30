@@ -32,7 +32,7 @@ import net.engining.pg.parameter.test.suport.AbstractTestCaseTemplate;
 public class ParameterLogTest extends AbstractTestCaseTemplate{
 	
 	@Autowired
-	private ParameterFacility facility;
+	private ParameterFacility parameterFacility;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -49,7 +49,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate{
 		sp.param2 = "param2";
 		sp.paramList = Lists.newArrayList();
 		
-		facility.addParameter("0001", sp);
+		parameterFacility.addParameter("0001", sp);
 
 		// 取日志
 		QParameterAudit qParameterAudit = QParameterAudit.parameterAudit;
@@ -79,7 +79,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate{
 		sp.param2 = "param2";
 		sp.paramList = Lists.newArrayList();
 		
-		facility.addParameter("0002", sp);
+		parameterFacility.addParameter("0002", sp);
 
 		// 取日志
 		QParameterAudit qParameterAudit = QParameterAudit.parameterAudit;
@@ -96,7 +96,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate{
 		assertThat(logs.get(0).getMtnUser(), notNullValue());
 		assertThat(logs.get(0).getMtnTimestamp(), notNullValue());
 		
-		facility.removeParameter(SampleParameter.class, "0002");
+		parameterFacility.removeParameter(SampleParameter.class, "0002");
 		JPAQuery<ParameterAudit> query2 = new JPAQueryFactory(em).select(qParameterAudit);
 		query2.from(qParameterAudit).where(qParameterAudit.paramKey.eq("0002")
 				.and(qParameterAudit.paramClass.eq(SampleParameter.class.getCanonicalName()))
@@ -126,7 +126,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate{
 		innerParameter.innerParameter = "innerParameter1";
 		sp.paramList.add(innerParameter);
 		
-		facility.addParameter("0003", sp);
+		parameterFacility.addParameter("0003", sp);
 		
 		// 取日志
 		QParameterAudit qParameterAudit = QParameterAudit.parameterAudit;
@@ -154,7 +154,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate{
 		innerParameter2.innerParameter = "innerParameter2";
 		sp2.paramList.add(innerParameter2);
 		
-		facility.updateParameter("0003", sp2);
+		parameterFacility.updateParameter("0003", sp2);
 		
 		JPAQuery<ParameterAudit> query2 = new JPAQueryFactory(em).select(qParameterAudit);
 		query2.from(qParameterAudit).where(qParameterAudit.paramKey.eq("0003")

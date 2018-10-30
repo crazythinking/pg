@@ -22,12 +22,12 @@ import net.engining.pg.parameter.test.suport.AbstractTestCaseTemplate;
 public class TimelineTest extends AbstractTestCaseTemplate{
 	
 	@Autowired
-	private ParameterFacility facility;
+	private ParameterFacility parameterFacility;
 	
 	private void validate(String key, int year, int month, int day, String expected)
 	{
 		TimelineParameter tp;
-		tp = facility.getParameter(TimelineParameter.class, key, new DateTime(year, month, day, 0, 0).toDate());
+		tp = parameterFacility.getParameter(TimelineParameter.class, key, new DateTime(year, month, day, 0, 0).toDate());
 		if (expected == null)
 		{
 			assertThat(tp, is(nullValue()));
@@ -53,7 +53,7 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 		validate("2", 2014, 1, 1, null);
 
 		//添加1/1
-		facility.addParameter("1", new TimelineParameter("tp20140101", new DateTime(2014, 1, 1, 0, 0)));
+		parameterFacility.addParameter("1", new TimelineParameter("tp20140101", new DateTime(2014, 1, 1, 0, 0)));
 		validate("1", 2013, 1, 1, null);
 		validate("1", 2014, 1, 1, "tp20140101");
 		validate("1", 2014, 1,31, "tp20140101");
@@ -63,7 +63,7 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 		validate("2", 2014, 1, 1, null);
 		
 		//添加3/1
-		facility.addParameter("1", new TimelineParameter("tp20140301", new DateTime(2014, 3, 1, 0, 0)));
+		parameterFacility.addParameter("1", new TimelineParameter("tp20140301", new DateTime(2014, 3, 1, 0, 0)));
 		validate("1", 2013, 1, 1, null);
 		validate("1", 2014, 1, 1, "tp20140101");
 		validate("1", 2014, 1,31, "tp20140101");
@@ -73,7 +73,7 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 		validate("2", 2014, 1, 1, null);
 
 		//添加2/1，不按顺序添加测试排序
-		facility.addParameter("1", new TimelineParameter("tp20140201", new DateTime(2014, 2, 1, 0, 0)));
+		parameterFacility.addParameter("1", new TimelineParameter("tp20140201", new DateTime(2014, 2, 1, 0, 0)));
 		validate("1", 2013, 1, 1, null);
 		validate("1", 2014, 1, 1, "tp20140101");
 		validate("1", 2014, 1,31, "tp20140101");
@@ -83,7 +83,7 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 		validate("2", 2014, 1, 1, null);
 
 		//添加key为2的
-		facility.addParameter("2", new TimelineParameter("tp20130101_2", new DateTime(2013, 1, 1, 0, 0)));
+		parameterFacility.addParameter("2", new TimelineParameter("tp20130101_2", new DateTime(2013, 1, 1, 0, 0)));
 		validate("1", 2013, 1, 1, null);
 		validate("1", 2014, 1, 1, "tp20140101");
 		validate("1", 2014, 1,31, "tp20140101");
@@ -93,7 +93,7 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 		validate("2", 2014, 1, 1, "tp20130101_2");
 		
 		//删除2/1
-		facility.removeParameter(TimelineParameter.class, "1", new DateTime(2014, 2, 1, 0, 0).toDate());
+		parameterFacility.removeParameter(TimelineParameter.class, "1", new DateTime(2014, 2, 1, 0, 0).toDate());
 		validate("1", 2013, 1, 1, null);
 		validate("1", 2014, 1, 1, "tp20140101");
 		validate("1", 2014, 1,31, "tp20140101");
@@ -104,7 +104,7 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 		
 		//更新1/1
 		tp = new TimelineParameter("tp20140101_modified", new DateTime(2014, 1, 1, 0, 0)); 
-		facility.updateParameter("1", tp);
+		parameterFacility.updateParameter("1", tp);
 		validate("1", 2013, 1, 1, null);
 		validate("1", 2014, 1, 1, "tp20140101_modified");
 		validate("1", 2014, 1,31, "tp20140101_modified");
@@ -114,22 +114,22 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 		validate("2", 2014, 1, 1, "tp20130101_2");
 		
 		//按兼容方式取最新
-		tp = facility.getParameter(TimelineParameter.class, "1");
+		tp = parameterFacility.getParameter(TimelineParameter.class, "1");
 		assertThat(tp.data, equalTo("tp20140301"));
 		
 		//取2/5的所有参数
-		Map<String, TimelineParameter> map = facility.getParameterMap(TimelineParameter.class, new DateTime(2014, 2, 5, 0, 0).toDate());
+		Map<String, TimelineParameter> map = parameterFacility.getParameterMap(TimelineParameter.class, new DateTime(2014, 2, 5, 0, 0).toDate());
 		assertThat(map.get("1").data, equalTo("tp20140101_modified"));
 		assertThat(map.get("2").data, equalTo("tp20130101_2"));
 		
 		//取最新参数
-		map = facility.getParameterMap(TimelineParameter.class);
+		map = parameterFacility.getParameterMap(TimelineParameter.class);
 		assertThat(map.get("1").data, equalTo("tp20140301"));
 		assertThat(map.get("2").data, equalTo("tp20130101_2"));
 		
 		//兼容方式删除
 		assertThat(
-				facility.removeParameter(TimelineParameter.class, "1"),
+				parameterFacility.removeParameter(TimelineParameter.class, "1"),
 				equalTo(true)
 		);
 		validate("1", 2013, 1, 1, null);
@@ -148,7 +148,7 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 	public void dateExists()
 	{
 		TimelineParameter tp = new TimelineParameter("1+2", null);
-		facility.addParameter("dateExists", tp);
+		parameterFacility.addParameter("dateExists", tp);
 	}
 
 	/**
@@ -158,10 +158,10 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 	public void updateNonExists()
 	{
 		TimelineParameter tp = new TimelineParameter("updateNonExists", new DateTime(2014, 1, 1, 0, 0));
-		facility.addParameter("updateNonExists", tp);
+		parameterFacility.addParameter("updateNonExists", tp);
 		
 		tp = new TimelineParameter("updateNonExists_modified", new DateTime(2014, 1, 2, 0, 0));
-		facility.updateParameter("updateNonExists", tp);
+		parameterFacility.updateParameter("updateNonExists", tp);
 	}
 	
 	/**
@@ -171,9 +171,9 @@ public class TimelineTest extends AbstractTestCaseTemplate{
 	public void removeNonExists()
 	{
 		TimelineParameter tp = new TimelineParameter("removeNonExists", new DateTime(2014, 1, 1, 0, 0));
-		facility.addParameter("removeNonExists", tp);
+		parameterFacility.addParameter("removeNonExists", tp);
 		
-		boolean ret = facility.removeParameter(TimelineParameter.class, "removeNonExists", new DateTime(2014, 1, 2, 0, 0).toDate());
+		boolean ret = parameterFacility.removeParameter(TimelineParameter.class, "removeNonExists", new DateTime(2014, 1, 2, 0, 0).toDate());
 		assertThat(ret, equalTo(false));
 	}
 
