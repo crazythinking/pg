@@ -36,6 +36,12 @@
 			<version>1</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
 		<!-- Spring 测试支持 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

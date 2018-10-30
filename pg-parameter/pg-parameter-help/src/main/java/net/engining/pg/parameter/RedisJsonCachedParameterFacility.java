@@ -17,9 +17,9 @@ import com.google.common.base.Optional;
  *
  */
 @CacheConfig(cacheManager="cacheParameterManager", cacheNames="parameter")
-public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
+public class RedisJsonCachedParameterFacility extends JsonLocalCachedParameterFacility{
 	
-	private static final Logger logger = LoggerFactory.getLogger(RedisCachedParameterFacility.class);
+	private static final Logger logger = LoggerFactory.getLogger(RedisJsonCachedParameterFacility.class);
 	
 	/* (non-Javadoc)
 	 * @see net.engining.pg.parameter.ParameterFacility#getParameter(java.lang.Class, java.lang.String)
