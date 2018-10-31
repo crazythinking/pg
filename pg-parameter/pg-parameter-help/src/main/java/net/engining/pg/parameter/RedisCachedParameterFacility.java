@@ -14,14 +14,11 @@ import com.google.common.base.Optional;
  * @author luxue
  *
  */
-@CacheConfig(cacheNames="parameter")
+@CacheConfig(cacheManager="cacheParameterManager", cacheNames="parameter")
 public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
 	
 	private static final Logger logger = LoggerFactory.getLogger(RedisCachedParameterFacility.class);
 	
-	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.ParameterFacility#getParameter(java.lang.Class, java.lang.String)
-	 */
 	@Override
 	@Cacheable(key="#paramClass.getName() + \"_\" + #key")
 	public <T> T getParameter(Class<T> paramClass, String key) {
@@ -30,9 +27,6 @@ public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
 		return super.getParameter(paramClass, key);
 	}
 	
-	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.LocalCachedParameterFacility#getParameter(java.lang.Class, java.lang.String, java.util.Date)
-	 */
 	@Override
 	@Cacheable(key="#paramClass.getName() + \"_\" + #key + \"_\" + #effectiveDate.toString()")
 	public <T> T getParameter(Class<T> paramClass, String key, Date effectiveDate) {
@@ -40,9 +34,6 @@ public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
 		return super.getParameter(paramClass, key, effectiveDate);
 	}
 
-//	/* (non-Javadoc)
-//	 * @see net.engining.pg.parameter.ParameterFacility#getParameterMap(java.lang.Class)
-//	 */
 //	@Override
 //	@Cacheable
 //	public <T> Map<String, T> getParameterMap(Class<T> paramClass) {
@@ -51,9 +42,6 @@ public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
 //	}
 //	
 //	
-//	/* (non-Javadoc)
-//	 * @see net.engining.pg.parameter.ParameterFacility#getParameterMap(java.lang.Class, java.util.Date)
-//	 */
 //	@Override
 //	@Cacheable
 //	public <T> Map<String, T> getParameterMap(Class<T> paramClass, Date effectiveDate) {
@@ -61,9 +49,6 @@ public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
 //		return super.getParameterMap(paramClass, effectiveDate);
 //	}
 	
-//	/* (non-Javadoc)
-//	 * @see net.engining.pg.parameter.LocalCachedParameterFacility#getParameterTable(java.lang.Class)
-//	 */
 //	@Override
 //	@Cacheable
 //	public <T> TreeBasedTable<String, Date, T> getParameterTable(Class<T> paramClass) {
@@ -71,9 +56,6 @@ public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
 //		return super.getParameterTable(paramClass);
 //	}
 	
-	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.ParameterFacility#getUniqueParameter(java.lang.Class)
-	 */
 	@Override
 	@Cacheable(key="#paramClass.getName() + \"_*\"")
 	public <T> Optional<T> getUniqueParameter(Class<T> paramClass) {
@@ -81,9 +63,6 @@ public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
 		return super.getUniqueParameter(paramClass);
 	}
 	
-	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.ParameterFacility#loadUniqueParameter(java.lang.Class)
-	 */
 	@Override
 	@Cacheable(key="#paramClass.getName() + \"_*\"")
 	public <T> T loadUniqueParameter(Class<T> paramClass) {
@@ -132,9 +111,6 @@ public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
 		super.updateUniqueParameter(parameter);
 	}
 	
-	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.ParameterFacility#removeParameter(java.lang.Class, java.lang.String)
-	 */
 	@Override
 	@CacheEvict(key="#paramClass.getName() + \"_\" + #key")
 	public <T> boolean removeParameter(Class<T> paramClass, String key) {
@@ -142,9 +118,6 @@ public class RedisCachedParameterFacility extends LocalCachedParameterFacility{
 		return super.removeParameter(paramClass, key);
 	}
 	
-	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.LocalCachedParameterFacility#removeParameter(java.lang.Class, java.lang.String, java.util.Date)
-	 */
 	@Override
 	@CacheEvict(key="#paramClass.getName() + \"_\" + #key + \"_\" + #effectiveDate.toString()")
 	public <T> boolean removeParameter(Class<T> paramClass, String key, Date effectiveDate) {
