@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
-import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
@@ -39,8 +38,8 @@ public class SnowflakeSequenceIdGenerator implements IdentifierGenerator, Config
 			Properties jvmProperties = System.getProperties();
 			if (Optional.fromNullable(jvmProperties).isPresent()) {
 				try {
-					workerId = Long.parseLong(jvmProperties.getProperty("pg.snowflake.workerId"));
-					datacenterId = Long.parseLong(jvmProperties.getProperty("pg.snowflake.dataCenterId"));
+					workerId = Long.parseLong(jvmProperties.getProperty("gm.common.snowflake-worker-id"));
+					datacenterId = Long.parseLong(jvmProperties.getProperty("gm.common.snowflake-data-center-id"));
 				} catch (Exception e) {
 					logger.warn("snowflake.properties配置异常：" + e.getMessage());
 					logger.warn("仍然未能正确找到配置属性，将使用MAC产生snowflake Id");
