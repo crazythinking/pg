@@ -75,7 +75,6 @@ public class ERMImporter {
 	 */
 	private static final Pattern columnAuditedPattern = Pattern.compile("\\$\\$\\$.*\\$\\$\\$");
 
-	@SuppressWarnings("unchecked")
 	public Database doImport(File ermSource, String tablePattern) throws Exception
 	{
 		Database result = new Database();

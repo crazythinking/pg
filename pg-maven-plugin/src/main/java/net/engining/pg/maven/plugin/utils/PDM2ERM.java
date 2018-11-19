@@ -26,7 +26,6 @@ import net.engining.pg.maven.plugin.meta.Table;
 
 public class PDM2ERM {
 
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws DocumentException, FileNotFoundException, IOException {
 		String input = "apm.erm";
 		

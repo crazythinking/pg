@@ -64,7 +64,6 @@ public class FrameworkMojo extends AbstractMojo {
 			ImmutableMap.of("p", "http://maven.apache.org/POM/4.0.0"));
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
 		Log logger = getLog();
@@ -210,7 +209,6 @@ public class FrameworkMojo extends AbstractMojo {
 		return xpath("/p:project/p:version").selectSingleNode(dom);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void replaceModulePom(String originalGroupId, String originalArtifactPrefix, String originalNamePrefix,
 			File pomFile) throws IOException, XmlPullParserException, FileNotFoundException, DocumentException {
 		SAXReader reader = new SAXReader();

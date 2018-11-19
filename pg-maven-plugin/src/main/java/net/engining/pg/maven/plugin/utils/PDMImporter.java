@@ -31,7 +31,6 @@ public class PDMImporter
 		this.logger = logger;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Database doImport(File pdmSource, String tablePattern)
 	{
 		try
