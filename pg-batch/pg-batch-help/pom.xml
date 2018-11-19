@@ -17,6 +17,10 @@
 		</dependency>
 		<dependency>
 			<groupId>net.engining.pg</groupId>
+			<artifactId>pg-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.engining.pg</groupId>
 			<artifactId>pg-web</artifactId>
 			<optional>true</optional>
 		</dependency>
@@ -38,11 +42,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-autoconfigure</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<!-- Spring Batch -->
@@ -101,13 +100,13 @@
  							Perhaps fix this at : https://github.com/spring-projects/spring-boot/issues/4847;
  							暂时的解决方案是如下maven-compiler-plugin配置；交给aspectj-maven-plugin去执行；
  							You could also let the AspectJ plugin run all the processing and disable annotation processing in the maven-compiler-plugin configuration-->
-			<plugin>
+			<!-- <plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-compiler-plugin</artifactId>
 			    <configuration>
 			        <proc>none</proc>
 			    </configuration>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>

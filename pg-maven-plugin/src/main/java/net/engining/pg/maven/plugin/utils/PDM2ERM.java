@@ -88,8 +88,9 @@ public class PDM2ERM {
 				}
 				
 				int insertPos = 0;	//找出第一个非主键字段
-				for (Element e : (List<Element>)elementTable.selectNodes("columns/*"))
+				for (Node eNode : elementTable.selectNodes("columns/*"))
 				{
+					Element e = (Element) eNode;
 					String word_id = e.elementText("word_id");
 					xpath = MessageFormat.format("/diagram/dictionary/word[id=''{0}'']", word_id);
 //					System.out.println(xpath);
@@ -152,8 +153,9 @@ public class PDM2ERM {
 			
 			Map<String, Element> wordsUsed = new HashMap<String, Element>();
 			//清理非该模块的表
-			for (Element elementTable : (List<Element>)doc.selectNodes("/diagram/contents/table"))
+			for (Node elementTableNode : doc.selectNodes("/diagram/contents/table"))
 			{
+				Element elementTable = (Element) elementTableNode;
 				if (!StringUtils.mid(elementTable.elementText("physical_name"), 4, 3).equals(module))
 				{
 					elementTable.detach();
@@ -161,13 +163,17 @@ public class PDM2ERM {
 				else
 				{
 					//登记word的使用
-					for (Element id : (List<Element>)elementTable.selectNodes("columns/*/word_id"))
+					for (Node idNode : elementTable.selectNodes("columns/*/word_id")){
+						Element id = (Element) idNode;
 						wordsUsed.put(id.getText(), id);
+					}
+						
 				}
 			}
 			//清理sequence
-			for (Element elementSequence : (List<Element>)doc.selectNodes("/diagram/sequence_set/sequence"))
+			for (Node elementSequenceNode : doc.selectNodes("/diagram/sequence_set/sequence"))
 			{
+				Element elementSequence = (Element) elementSequenceNode;
 				if (!StringUtils.mid(elementSequence.elementText("name"), 4, 3).equals(module))
 				{
 					elementSequence.detach();
@@ -176,8 +182,9 @@ public class PDM2ERM {
 			
 			
 			//清理未使用word
-			for (Element elementWord : (List<Element>)doc.selectNodes("/diagram/dictionary/word"))
+			for (Node elementWordNode : doc.selectNodes("/diagram/dictionary/word"))
 			{
+				Element elementWord =(Element) elementWordNode;
 				if (!wordsUsed.containsKey(elementWord.elementText("id")))
 				{
 					elementWord.detach();

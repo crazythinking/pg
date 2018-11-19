@@ -45,8 +45,9 @@ public class PDMImporter
 			
 			// 首先处理domain
 			Map<String, Domain> domainMap = new HashMap<String, Domain>();
-			for (Element nodeDomain : (List<Element>) docSource.selectNodes("//c:Domains/o:PhysicalDomain"))
+			for (Node nodeDomainNode : docSource.selectNodes("//c:Domains/o:PhysicalDomain"))
 			{
+				Element nodeDomain = (Element) nodeDomainNode;
 				Node nodeCode = nodeDomain.selectSingleNode("a:Code");
 				Node nodeName = nodeDomain.selectSingleNode("a:Name");
 				Node nodeLength = nodeDomain.selectSingleNode("a:Length");
@@ -96,8 +97,9 @@ public class PDMImporter
 			// 取所有表
 			Map<String, Column> columnIdMap = new HashMap<String, Column>();
 			Map<String, Table> tableIdMap = new HashMap<String, Table>();
-			for (Element nodeTable : (List<Element>) docSource.selectNodes("//c:Tables/o:Table"))
+			for (Node nodeTableNode : docSource.selectNodes("//c:Tables/o:Table"))
 			{
+				Element nodeTable = (Element) nodeTableNode;
 				Table table = new Table();
 				table.setDbName(nodeTable.selectSingleNode("a:Code").getText());
 				table.setTextName(nodeTable.selectSingleNode("a:Name").getText());
@@ -112,8 +114,9 @@ public class PDMImporter
 				
 				tableIdMap.put(nodeTable.attributeValue("Id"), table);
 
-				for (Element nodeColumn : (List<Element>) nodeTable.selectNodes("c:Columns/o:Column"))
+				for (Node nodeColumnNode : nodeTable.selectNodes("c:Columns/o:Column"))
 				{
+					Element nodeColumn = (Element) nodeColumnNode;
 					processColumns(domainMap, columnIdMap, table, nodeColumn);
 				}
 
@@ -125,9 +128,10 @@ public class PDMImporter
 					continue;
 				}
 				String ref = nodePrimaryKeyRef.attribute("Ref").getText();
-				List<Element> pkColumns = (List<Element>) nodeTable.selectNodes("c:Keys/o:Key[@Id=\"" + ref + "\"]/c:Key.Columns/o:Column");
-				for (Element pkColumn : pkColumns)
+				List<Node> pkColumns = nodeTable.selectNodes("c:Keys/o:Key[@Id=\"" + ref + "\"]/c:Key.Columns/o:Column");
+				for (Node pkColumnNode : pkColumns)
 				{
+					Element pkColumn =(Element) pkColumnNode;
 					Column c = columnIdMap.get(pkColumn.attributeValue("Ref"));
 					if (c.getDbName().startsWith("SEQUENCE"))
 						c.setIdentity(true);
@@ -135,11 +139,13 @@ public class PDMImporter
 				}
 				
 				// 处理索引
-				for (Element nodeIndex : (List<Element>) nodeTable.selectNodes("c:Indexes/o:Index"))
+				for (Node nodeIndexNode : nodeTable.selectNodes("c:Indexes/o:Index"))
 				{
+					Element nodeIndex = (Element) nodeIndexNode;
 					List<Column> indexColumns = new ArrayList<Column>();
-					for (Element nodeIndexColumn : (List<Element>) nodeIndex.selectNodes("c:IndexColumns/o:IndexColumn/c:Column/o:Column"))
+					for (Node nodeIndexColumnNode : nodeIndex.selectNodes("c:IndexColumns/o:IndexColumn/c:Column/o:Column"))
 					{
+						Element nodeIndexColumn = (Element) nodeIndexColumnNode;
 						String columnRef = nodeIndexColumn.attributeValue("Ref");
 						Column col = (Column)columnIdMap.get(columnRef);
 						indexColumns.add(col);
@@ -152,8 +158,9 @@ public class PDMImporter
 			}
 			
 			// 处理视图
-			for (Element nodeView : (List<Element>) docSource.selectNodes("//c:Views/o:View"))
+			for (Node nodeViewNode : docSource.selectNodes("//c:Views/o:View"))
 			{
+				Element nodeView = (Element) nodeViewNode;
 				Table table = new Table();
 				table.setDbName(nodeView.selectSingleNode("a:Code").getText());
 				
@@ -218,9 +225,9 @@ public class PDMImporter
 //			}
 			
 			// 处理sequence
-			List<Element> sequenceCodes = (List<Element>) docSource.selectNodes("//c:Sequences/o:Sequence/a:Code");
-			for (Element s : sequenceCodes)
+			for (Node sNode : docSource.selectNodes("//c:Sequences/o:Sequence/a:Code"))
 			{
+				Element s = (Element) sNode;
 				result.getSequences().add(s.getText());
 			}
 			

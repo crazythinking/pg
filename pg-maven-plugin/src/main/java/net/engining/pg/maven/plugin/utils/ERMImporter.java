@@ -19,6 +19,7 @@ import org.apache.ibatis.ibator.api.dom.java.FullyQualifiedJavaType;
 import org.apache.maven.plugin.logging.Log;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import com.google.common.collect.Lists;
@@ -85,7 +86,8 @@ public class ERMImporter {
 		Document docSource = sar.read(ermSource);
 		
 		// 取数据库类型
-		for (Element nodeSetting : (List<Element>) docSource.selectNodes("/diagram/settings")){
+		for (Node nodeSettingNode : docSource.selectNodes("/diagram/settings")){
+			Element nodeSetting = (Element) nodeSettingNode;
 			String dbType = nodeSetting.elementText("database");
 			if(DbType.DB2.toString().equals(dbType)){
 				result.setDbType(DbType.DB2);
@@ -98,8 +100,9 @@ public class ERMImporter {
 		//先取所有的word，组建Column
 		Map<String, Element> words = new HashMap<String, Element>();
 		Map<String, Domain> domains = new HashMap<String, Domain>();
-		for (Element nodeWord : (List<Element>) docSource.selectNodes("/diagram/dictionary/word"))
+		for (Node nodeWordNode : docSource.selectNodes("/diagram/dictionary/word"))
 		{
+			Element nodeWord = (Element) nodeWordNode;
 			String id = nodeWord.elementText("id");
 			words.put(id, nodeWord);
 			
@@ -114,10 +117,11 @@ public class ERMImporter {
 
 		//取出table
 		Map<String, Element> tables = new HashMap<String, Element>();
-		for (Element nodeTable : (List<Element>) docSource.selectNodes("/diagram/contents/table"))
+		for (Node nodeTableNode : docSource.selectNodes("/diagram/contents/table")){
+			Element nodeTable = (Element) nodeTableNode;
 			tables.put(nodeTable.elementText("id"), nodeTable);
-		
-		
+		}
+			
 		//开始组建Database对象
 		Map<String, Column> allColumns = new HashMap<String, Column>();	//全局column映射，以id为key
 		for (Element nodeTable : tables.values())
@@ -130,8 +134,9 @@ public class ERMImporter {
 			Set<String> columnNames = new HashSet<String>();	//防重复
 			
 			//处理字段
-			for (Element nodeColumn : (List<Element>) nodeTable.selectNodes("columns/*"))
+			for (Node nodeColumnNode : nodeTable.selectNodes("columns/*"))
 			{
+				Element nodeColumn = (Element) nodeColumnNode;
 				Column column = new Column();
 				logger.debug(nodeColumn.getName());
 				
@@ -351,21 +356,25 @@ public class ERMImporter {
 			}
 			
 			//处理索引
-			for (Element nodeIndex : (List<Element>) nodeTable.selectNodes("indexes/*"))	//源文件有拼写错误，所以这里用*，希望以后版本会改掉(1.0.0)
+			for (Node nodeIndexNode : nodeTable.selectNodes("indexes/*"))	//源文件有拼写错误，所以这里用*，希望以后版本会改掉(1.0.0)
 			{
+				Element nodeIndex = (Element) nodeIndexNode;
 				List<Column> index = new ArrayList<Column>();
-				for (Element nodeColumn : (List<Element>) nodeIndex.selectNodes("columns/column"))
+				for (Node nodeColumnNode : nodeIndex.selectNodes("columns/column"))
 				{
+					Element nodeColumn = (Element) nodeColumnNode;
 					index.add(allColumns.get(nodeColumn.elementText("id")));
 				}
 				table.getIndexes().add(index);
 			}
 			//唯一约束也按索引处理
-			for (Element nodeIndex : (List<Element>) nodeTable.selectNodes("complex_unique_key_list/complex_unique_key"))
+			for (Node nodeIndexNode : nodeTable.selectNodes("complex_unique_key_list/complex_unique_key"))
 			{
+				Element nodeIndex = (Element) nodeIndexNode;
 				List<Column> unique = new ArrayList<Column>();
-				for (Element nodeColumn : (List<Element>) nodeIndex.selectNodes("columns/column"))
+				for (Node nodeColumnNode : nodeIndex.selectNodes("columns/column"))
 				{
+					Element nodeColumn = (Element) nodeColumnNode;
 					unique.add(allColumns.get(nodeColumn.elementText("id")));
 				}
 				table.getUniques().add(unique);
@@ -375,8 +384,11 @@ public class ERMImporter {
 		}
 		
 		//处理Sequence
-		for (Element nodeName : (List<Element>) docSource.selectNodes("/diagram/sequence_set/sequence/name"))
+		for (Node nodeNameNode : docSource.selectNodes("/diagram/sequence_set/sequence/name")){
+			Element nodeName = (Element) nodeNameNode;
 			result.getSequences().add(nodeName.getText());
+		}
+			
 		
 		return result;
 	}

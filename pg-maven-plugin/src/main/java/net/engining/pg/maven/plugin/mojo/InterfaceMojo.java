@@ -23,6 +23,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import net.engining.pg.maven.plugin.utils.GeneralFileContent;
@@ -68,7 +69,6 @@ public class InterfaceMojo extends AbstractMojo {
 
 	private Log logger = getLog();
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		project.addCompileSourceRoot(outputDirectory);
@@ -87,7 +87,8 @@ public class InterfaceMojo extends AbstractMojo {
 				String layoutName = eLayout.attributeValue("report");
 				String layoutModule = eLayout.attributeValue("module");
 
-				for (Element eRecord : (List<Element>) eLayout.selectNodes("record")) {
+				for (Node eRecordNode : eLayout.selectNodes("record")) {
+					Element eRecord = (Element)eRecordNode;
 					String className = GeneratorUtils
 							.dbName2ClassName(layoutName + "_" + eRecord.attributeValue("type"));
 					TopLevelClass clazz = new TopLevelClass(
@@ -96,7 +97,8 @@ public class InterfaceMojo extends AbstractMojo {
 					clazz.setVisibility(JavaVisibility.PUBLIC);
 					clazz.addImportedType(new FullyQualifiedJavaType(CChar.class.getCanonicalName()));
 
-					for (Element eField : (List<Element>) eRecord.selectNodes("field")) {
+					for (Node eFieldNode : eRecordNode.selectNodes("field")) {
+						Element eField = (Element)eFieldNode;
 						String fieldType = eField.attributeValue("type");
 						int length = Integer.parseInt(eField.attributeValue("length"));
 						Field field = new Field();

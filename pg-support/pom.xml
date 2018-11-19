@@ -133,19 +133,16 @@
  							Perhaps fix this at : https://github.com/spring-projects/spring-boot/issues/4847;
  							暂时的解决方案是如下maven-compiler-plugin配置；交给aspectj-maven-plugin去执行；
  							You could also let the AspectJ plugin run all the processing and disable annotation processing in the maven-compiler-plugin configuration-->
-			<plugin>
+			<!-- <plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-compiler-plugin</artifactId>
 			    <configuration>
 			        <proc>none</proc>
 			    </configuration>
-			</plugin>
+			</plugin> -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<!-- <configuration>
-					<sources/>
-				</configuration> -->
 			</plugin>
 		</plugins>
 	</build>

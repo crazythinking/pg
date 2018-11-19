@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 
 import com.thoughtworks.xstream.XStream;
@@ -20,6 +19,14 @@ public class XStreamObjectFactoryBean<T> implements FactoryBean<T>
 	
 	private T object;
 	
+	/**
+	 * @param xml
+	 */
+	public XStreamObjectFactoryBean(Resource xml) {
+		super();
+		this.xml = xml;
+	}
+
 	@Override
 	public T getObject() throws Exception {
 		
@@ -60,7 +67,6 @@ public class XStreamObjectFactoryBean<T> implements FactoryBean<T>
 		return object;
 	}
 
-	@Required
 	public void setXml(Resource xml) {
 		this.xml = xml;
 	}

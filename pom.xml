@@ -21,6 +21,7 @@
 
 	<modules>
 		<module>pg-support</module>
+		<module>pg-config</module>
 		<module>pg-maven-plugin</module>
 		<module>pg-parameter</module>
 		<module>pg-batch</module>
@@ -34,6 +35,11 @@
 			<dependency>
 				<groupId>net.engining.pg</groupId>
 				<artifactId>pg-support</artifactId>
+				<version>${pg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.engining.pg</groupId>
+				<artifactId>pg-config</artifactId>
 				<version>${pg.version}</version>
 			</dependency>
 			<dependency>
