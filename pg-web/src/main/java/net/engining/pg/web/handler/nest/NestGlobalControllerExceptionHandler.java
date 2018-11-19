@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import net.engining.pg.support.core.exception.ErrorCode;
@@ -60,7 +61,7 @@ public class NestGlobalControllerExceptionHandler {
 	@ExceptionHandler(value = { ErrorMessageException.class })
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	public BaseResponseBean IllegalArgumentException(ErrorMessageException ex) {
+	public BaseResponseBean illegalArgumentException(ErrorMessageException ex) {
 		log.error("ERROR_CODE:{}, have exceptions as flowing: ",ex.getErrorCode().getValue());
 		ExceptionUtilsExt.dump(ex);
 		return setupReturn(ex.getErrorCode().getValue(), ex.getErrorCode().getLabel()+" : "+ex.getMessage());
@@ -71,6 +72,13 @@ public class NestGlobalControllerExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	public BaseResponseBean noHandlerFoundException(NoHandlerFoundException ex) {
 		return setupReturn(HttpStatus.NOT_FOUND.toString(), ex.getMessage());
+	}
+	
+	@ExceptionHandler(MultipartException.class)
+	@ResponseBody
+	@ResponseStatus(HttpStatus.OK)
+	public BaseResponseBean multipartException(MultipartException ex) {
+		return setupReturn(HttpStatus.INTERNAL_SERVER_ERROR.toString(), ex.getMessage());
 	}
 
 	@ExceptionHandler(value = { Exception.class })
