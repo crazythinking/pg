@@ -21,13 +21,28 @@
 			<artifactId>spring-boot</artifactId>
 			<optional>true</optional>
 		</dependency>
-		
 		<!-- 该组件为自定义的properties(@ConfigurationProperties)产生元数据文件classes/META-INF/spring-configuration-metadata.json; 
 		另外此依赖还会造成aspectj-maven-plugin插件maven编译时出错，尽量不要同时用，或者配置maven-compiler-plugin：<proc>none</proc>（详见pg-support） -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>net.engining.pg</groupId>
+			<artifactId>pg-support</artifactId>
 		</dependency>
 	</dependencies>
 </project>
