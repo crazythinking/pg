@@ -51,8 +51,8 @@ public class JsonLocalCachedParameterFacility extends ParameterFacility implemen
 	@Autowired
 	private Provider4Organization provider4Organization;
 	
-	//最小日期时间+1秒，防止mysql数据库出错，timestamp型数据的取值范围('1970-01-01 00:00:00', '2037-12-31 23:59:59']
-	private static Date minDate = DateUtils.addSeconds(new Date(0), 1);
+	//最小日期时间+1天，防止mysql5.7以上版本数据库出错，timestamp型数据的取值范围('1970-01-01 00:00:00', '2037-12-31 23:59:59']
+	private static Date minDate = DateUtils.addDays(new Date(0), 1);
 
 	//默认5分钟过期
 	private long expireDuration = 5;
