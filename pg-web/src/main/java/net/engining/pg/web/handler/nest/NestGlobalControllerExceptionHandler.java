@@ -61,7 +61,7 @@ public class NestGlobalControllerExceptionHandler {
 	@ExceptionHandler(value = { ErrorMessageException.class })
 	@ResponseBody
 	@ResponseStatus(HttpStatus.OK)
-	public BaseResponseBean illegalArgumentException(ErrorMessageException ex) {
+	public BaseResponseBean IllegalArgumentException(ErrorMessageException ex) {
 		log.error("ERROR_CODE:{}, have exceptions as flowing: ",ex.getErrorCode().getValue());
 		ExceptionUtilsExt.dump(ex);
 		return setupReturn(ex.getErrorCode().getValue(), ex.getErrorCode().getLabel()+" : "+ex.getMessage());

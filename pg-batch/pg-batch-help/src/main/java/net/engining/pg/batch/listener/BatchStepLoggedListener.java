@@ -31,7 +31,7 @@ public class BatchStepLoggedListener implements StepExecutionListener {
 			logger.info(stepExecution.getStepName() + " 执行结束" + dateFormat.format(new Date()));
 		}
 		else {
-			logger.error("TRADE_TYPE:[{}], 执行出错(TRADE_STATUS:F), AT {}", stepExecution.getStepName(), dateFormat.format(new Date()));
+			logger.error("批量步骤执行出错{TRADE_TYPE:{}, TRADE_STATUS:F}, AT {}", stepExecution.getStepName(), dateFormat.format(new Date()));
 			logger.error("ERROR_CODE:{}, have exceptions as flowing: ",ErrorCode.SystemError.getValue());
 			for(Throwable t : stepExecution.getFailureExceptions()){
 				ExceptionUtilsExt.dump(t);
