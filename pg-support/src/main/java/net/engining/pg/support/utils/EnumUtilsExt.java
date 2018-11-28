@@ -1,5 +1,9 @@
 package net.engining.pg.support.utils;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,7 +18,22 @@ public final class EnumUtilsExt extends EnumUtils {
     private EnumUtilsExt() {
         throw new AssertionError("No " + getClass().getName() + " instances for you!");
     }
-
+    
+    @SuppressWarnings("unchecked")
+	public static <E extends Enum<E>> List<E> enumFilter(Class<E> enumClass, E... v){
+		List<E> ls = Arrays.asList(v);
+		
+		List<E> lsv = getEnumList(enumClass);
+		
+		List<E> ems = lsv.stream().filter(x -> !ls.contains(x)).collect(Collectors.toList());
+		
+//		ems.stream().forEach(x ->{
+//			System.out.println(x);
+//		});;
+		
+		return ems;
+	}
+    
     /**
      * 根据枚举属性名称、属性的值获取枚举，忽略大小写.
      *
