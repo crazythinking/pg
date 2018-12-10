@@ -24,6 +24,8 @@ import org.springframework.batch.item.support.AbstractItemCountingItemStreamItem
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Optional;
+
 import net.engining.pg.batch.entity.model.PgKeyContext;
 
 /**
@@ -180,9 +182,8 @@ public abstract class AbstractKeyBasedStreamReader<KEY, INFO> extends AbstractIt
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	@BeforeStep
-	void beforeStep(StepExecution stepExecution) {
+	void beforeStep(StepExecution stepExecution) throws InterruptedException {
 		// 由于继承了
 		// AbstractItemCountingItemStreamReader，doOpen里拿不到ExecutionContext，所以只能在这里处理
 		// 这里的处理在事务之外
@@ -190,11 +191,8 @@ public abstract class AbstractKeyBasedStreamReader<KEY, INFO> extends AbstractIt
 		if (ec.containsKey(KEY_CONTEXT_KEY)) {
 			// 如果有Partitioner或断点续批
 			long contextId = ec.getLong(KEY_CONTEXT_KEY);
-			PgKeyContext context = em.find(PgKeyContext.class, contextId);
-			allKeys = (List<KEY>) context.getKeyList();
-			//转换为线程安全的Vector
-			allKeysVector = new Vector<KEY>(allKeys);
-			logger.info("加载已有的ContextId:{}，共{}条主键信息。", contextId, allKeys.size());
+			int times = 0;
+			loadAllKeysByPgKeyContextIdRetriable(times, contextId);
 		}
 		else {
 			// 如果没有Partitioner，就在这里把所有主键加载，并且写入ExecutionContext
@@ -206,6 +204,34 @@ public abstract class AbstractKeyBasedStreamReader<KEY, INFO> extends AbstractIt
 			ec.putLong(KEY_CONTEXT_KEY, contextId);
 			logger.info("加载新建的ContextId:{}，共{}条主键信息。", contextId, allKeys.size());
 		}
+	}
+	
+	/**
+	 * 在spring batch中由于分片处理partition，与beforeStep处理通常不在同一个线程内(通常是父子线程)，因此通常事务可能也不是同一个；
+	 * 极端情况下存在partition中的事务还未提交，但beforeStep已经开始处理，根据PgKeyContextId获取id列表，此时会出现Null的情况；
+	 * 因此这里通过重试3次(相隔1秒)，来解决这类情况，如果仍未获取到，则依靠断点续批解决；
+	 * @param contextId
+	 * @throws InterruptedException
+	 */
+	@SuppressWarnings("unchecked")
+	private void loadAllKeysByPgKeyContextIdRetriable(int times, long contextId) throws InterruptedException{
+		PgKeyContext context = em.find(PgKeyContext.class, contextId);
+		if(Optional.fromNullable(context).isPresent()){
+			allKeys = (List<KEY>) context.getKeyList();
+			//转换为线程安全的Vector
+			allKeysVector = new Vector<KEY>(allKeys);
+			logger.info("加载已有的ContextId:{}，共{}条主键信息。", contextId, allKeys.size());
+		}
+		else {
+			if(times<3){
+				times++;
+				logger.warn("未能从数据库取到Id={}的PgKeyContext，主线程中的事务可能尚未完成提交，1秒后将重试，已重试{}次；", contextId, times);
+				Thread.sleep(1000);
+				loadAllKeysByPgKeyContextIdRetriable(times, contextId);
+			}
+			
+		}
+		
 	}
 
 	@Transactional(rollbackFor = Exception.class)

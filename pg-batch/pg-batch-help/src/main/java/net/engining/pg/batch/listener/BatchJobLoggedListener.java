@@ -28,7 +28,8 @@ public class BatchJobLoggedListener implements JobExecutionListener {
 		if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
 			logger.info("{} 的批量执行结束, 于{}", jobExecution.getJobParameters().getString(BatchJobParameterKeys.BatchSeq), dateFormat.format(new Date()));
 		} else {
-			logger.info("TRADE_TYPE:[EOD],TRADE_STATUS:F, {} 的批量未成功执行结束, 批量状态={}, 于{}",
+			logger.error("批量异常结束{TRADE_TYPE:{},TRADE_STATUS:F}, {} 的批量未成功执行结束, 批量状态={}, 于{}",
+					jobExecution.getJobInstance().getJobName(),
 					jobExecution.getJobParameters().getString(BatchJobParameterKeys.BatchSeq),
 					jobExecution.getStatus(), dateFormat.format(new Date()));
 		}
