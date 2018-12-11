@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang3.time.DateUtils;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.TreeBasedTable;
@@ -22,6 +24,9 @@ public abstract class ParameterFacility {
 	public static final String UNIQUE_PARAM_KEY = "*";
 	
 	private static Date maxDate = new Date(Long.MAX_VALUE);
+	
+	//最小日期时间+1天，防止mysql5.7以上版本数据库出错，timestamp型数据的取值范围('1970-01-01 00:00:00', '2037-12-31 23:59:59']
+	private static Date minDate = DateUtils.addDays(new Date(0), 1);
 	
 	// 下面是类数基本操作，由子类完成
 
@@ -45,18 +50,33 @@ public abstract class ParameterFacility {
 	 */
 	public abstract <T> void addParameter(String key, T newParameter);
 	
+	/**
+	 * 更新指定参数，生效日期由 {@link HasEffectiveDate}指定。
+	 * @param key
+	 * @param parameter
+	 */
+	public abstract <T> void updateParameter(String key, T parameter, Date effectiveDate);
+	
 	public <T> void addUniqueParameter(T newParameter)
 	{
 		addParameter(UNIQUE_PARAM_KEY, newParameter);
 	}
 
 	/**
-	 * 更新指定参数，生效日期由 {@link HasEffectiveDate}指定。
+	 * 不指定有效期，更新指定参数
+	 * @param paramClass
 	 * @param key
+	 * @return
+	 */
+	public <T> void updateParameter(String key, T parameter)
+	{
+		updateParameter(key, parameter, minDate);
+	}
+	
+	/**
+	 * 不指定有效期，更新指定全局唯一参数
 	 * @param parameter
 	 */
-	public abstract <T> void updateParameter(String key, T parameter);
-	
 	public <T> void updateUniqueParameter(T parameter)
 	{
 		updateParameter(UNIQUE_PARAM_KEY, parameter);
@@ -111,6 +131,11 @@ public abstract class ParameterFacility {
 		return getParameter(paramClass, key, maxDate);
 	}
 
+	/**
+	 * 返回一个可能为空的参数实例
+	 * @param paramClass
+	 * @return
+	 */
 	public <T> Optional<T> getUniqueParameter(Class<T> paramClass)
 	{
 		return Optional.fromNullable(getParameter(paramClass, UNIQUE_PARAM_KEY));

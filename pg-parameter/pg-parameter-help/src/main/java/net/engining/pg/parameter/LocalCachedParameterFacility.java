@@ -40,6 +40,7 @@ import net.engining.pg.parameter.entity.model.ParameterObject;
 import net.engining.pg.parameter.entity.model.ParameterObjectKey;
 import net.engining.pg.parameter.entity.model.QParameterObject;
 import net.engining.pg.parameter.utils.ParamObjDiffUtils;
+import net.engining.pg.support.utils.ValidateUtilExt;
 
 
 public class LocalCachedParameterFacility extends ParameterFacility implements ApplicationListener<ParameterChangedEvent>, InitializingBean
@@ -53,8 +54,8 @@ public class LocalCachedParameterFacility extends ParameterFacility implements A
 	@Autowired
 	private Provider4Organization provider4Organization;
 	
-	//最小日期时间+1秒，防止mysql数据库出错，timestamp型数据的取值范围('1970-01-01 00:00:00', '2037-12-31 23:59:59']
-	private static Date minDate = DateUtils.addSeconds(new Date(0), 1);
+	//最小日期时间+1天，防止mysql5.7以上版本数据库出错，timestamp型数据的取值范围('1970-01-01 00:00:00', '2037-12-31 23:59:59']
+	private static Date minDate = DateUtils.addDays(new Date(0), 1);
 
 	//默认5分钟过期
 	private long expireDuration = 5;
@@ -276,14 +277,15 @@ public class LocalCachedParameterFacility extends ParameterFacility implements A
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
-	public <T> void updateParameter(String key, T parameter) {
+	public <T> void updateParameter(String key, T parameter, Date effectiveDate) {
 		checkNotNull(parameter, "更新时对象不能为null");
 		checkNotNull(key, "更新时对象key不能为null");
 		
-		Date effectiveDate = minDate;	//默认为史前+1s '1970-01-01 00:00:01'
+		if(ValidateUtilExt.isNullOrEmpty(effectiveDate)) {
+			effectiveDate = minDate;	//默认为史前+1d '1970-01-02 00:00:00'
+		}
 
-		if (parameter instanceof HasEffectiveDate)
-		{
+		if (parameter instanceof HasEffectiveDate) {
 			//如果支持effectiveDate，则使用参数内的数据
 			effectiveDate = ((HasEffectiveDate) parameter).getEffectiveDate();
 		}
