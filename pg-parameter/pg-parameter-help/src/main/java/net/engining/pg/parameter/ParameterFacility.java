@@ -26,10 +26,9 @@ public abstract class ParameterFacility {
 	private static Date maxDate = new Date(Long.MAX_VALUE);
 	
 	//最小日期时间+1天，防止mysql5.7以上版本数据库出错，timestamp型数据的取值范围('1970-01-01 00:00:00', '2037-12-31 23:59:59']
-	private static Date minDate = DateUtils.addDays(new Date(0), 1);
+	//这里为了兼容遗留数据仍然+1秒，但是需要确保Mysql服务器的时区设置正确，即与JVM运行参数所设置时区保持一致
+	private static Date minDate = DateUtils.addSeconds(new Date(0), 1);
 	
-	// 下面是类数基本操作，由子类完成
-
 	/**
 	 * 根据参数类型、参数主键，取在指定日期有效的参数。
 	 */
@@ -218,6 +217,13 @@ public abstract class ParameterFacility {
 	public <T> boolean removeParameter(Class<T> paramClass, String key)
 	{
 		return removeParameter(paramClass, key, null);
+	}
+	
+	/**
+	 * @return the minDate
+	 */
+	public static Date getMinDate() {
+		return minDate;
 	}
 
 }
