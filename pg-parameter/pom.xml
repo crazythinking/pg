@@ -10,6 +10,7 @@
   </parent>
   
   <artifactId>pg-parameter</artifactId>
+  <name>PowerGear - pg-parameter 参数体系支持库</name>
   <packaging>pom</packaging>
   
   <modules>

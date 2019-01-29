@@ -8,7 +8,8 @@
 	</parent>
 	
 	<artifactId>pg-batch-dict</artifactId>
-	<name>PowerGear - batch Dict</name>
+	<name>PowerGear - pg-batch-dict</name>
+	<packaging>jar</packaging>
 	
 	<dependencies>
 		<dependency>

@@ -7,9 +7,10 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>pg-parameter-help</artifactId>
-	<name>PowerGear - pg-parameter-help 参数工具库</name>
-	<dependencies>
+	<name>PowerGear - pg-parameter-help</name>
+	<packaging>jar</packaging>
 	
+	<dependencies>
 		<!-- 自身框架依赖 -->
 		<dependency>
 			<groupId>net.engining.pg</groupId>
@@ -26,6 +27,12 @@
 			<artifactId>spring-amqp</artifactId>
 			<scope>provided</scope>	<!-- 不强制依赖传递 -->
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<optional>true</optional>
+		</dependency>
+		
 		<dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
@@ -54,14 +61,48 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- redis 和 缓存 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+	    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-pool2</artifactId>
+		    <scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.batch</groupId>
 			<artifactId>spring-batch-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.engining.pg</groupId>
+			<artifactId>pg-config</artifactId>
 			<scope>test</scope>
 		</dependency>
 

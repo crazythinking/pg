@@ -8,7 +8,8 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>pg-support</artifactId>
-	<name>PowerGear - 运行支持库 </name>
+	<name>PowerGear - pg-support 基础开发支持库 </name>
+	<packaging>jar</packaging>
 
 	<properties>
 		<commons.daemon.version>1.0.15</commons.daemon.version>

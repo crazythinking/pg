@@ -11,9 +11,9 @@
 
 	<groupId>net.engining.pg</groupId>
 	<artifactId>pg-parent</artifactId>
-	<packaging>pom</packaging>
 	<version>3.4.0-SNAPSHOT</version>
-	<name>PowerGear - 应用程序开发框架</name>
+	<name>PowerGear - 开发框架</name>
+	<packaging>pom</packaging>
 	
 	<properties>
 		<pg.version>3.4.0-SNAPSHOT</pg.version>

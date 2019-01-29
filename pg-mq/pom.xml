@@ -7,7 +7,8 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>pg-mq</artifactId>
-	<name>PowerGear - 基于AMQP消息队列的系统间通讯及RPC支持</name>
+	<name>PowerGear - pg-mq SpringAmqp扩展支持库</name>
+	<packaging>jar</packaging>
 	
 	<dependencies>
 		<dependency>

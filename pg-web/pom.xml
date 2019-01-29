@@ -8,7 +8,8 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>pg-web</artifactId>
-	<name>PowerGear - pg-web WEB服务支持库</name>
+	<name>PowerGear - pg-web SpringWeb扩展支持库</name>
+	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>

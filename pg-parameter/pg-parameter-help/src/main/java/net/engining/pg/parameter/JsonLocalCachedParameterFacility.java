@@ -38,6 +38,7 @@ import net.engining.pg.parameter.entity.model.ParameterObject;
 import net.engining.pg.parameter.entity.model.ParameterObjectKey;
 import net.engining.pg.parameter.entity.model.QParameterObject;
 import net.engining.pg.parameter.utils.ParamObjDiffUtils;
+import net.engining.pg.support.utils.ValidateUtilExt;
 
 
 public class JsonLocalCachedParameterFacility extends ParameterFacility implements ApplicationListener<ParameterChangedEvent>, InitializingBean
@@ -266,14 +267,15 @@ public class JsonLocalCachedParameterFacility extends ParameterFacility implemen
 
 	@Override
 	@Transactional
-	public <T> void updateParameter(String key, T parameter) {
+	public <T> void updateParameter(String key, T parameter, Date effectiveDate) {
 		checkNotNull(parameter, "更新时对象不能为null");
 		checkNotNull(key, "更新时对象key不能为null");
 		
-		Date effectiveDate = minDate;	//默认为史前+1s '1970-01-01 00:00:01'
+		if(ValidateUtilExt.isNullOrEmpty(effectiveDate)) {
+			effectiveDate = minDate;	//默认为史前+1d '1970-01-02 00:00:00'
+		}
 
-		if (parameter instanceof HasEffectiveDate)
-		{
+		if (parameter instanceof HasEffectiveDate) {
 			//如果支持effectiveDate，则使用参数内的数据
 			effectiveDate = ((HasEffectiveDate) parameter).getEffectiveDate();
 		}

@@ -14,8 +14,9 @@
 	<groupId>net.engining.pg</groupId>
 	<artifactId>pg-maven-plugin</artifactId>
 	<version>3.4.0-SNAPSHOT</version>
+	<name>PowerGear - pg-maven-plugin 基于Maven的代码生成插件</name>
 	<packaging>maven-plugin</packaging>
-	<name>PowerGear - 代码生成Maven插件</name>
+	
 	<description>用于生成基于PowerGear的基础数据库包装框架。用于代码生成的代码模型API基于ibator的内部工具类，其License基于Apache License V2，见 http://http://ibatis.apache.org/docs/tools/ibator/license.html </description>
 
 	<properties>

@@ -24,8 +24,7 @@ public class RedisContextConfig {
 	public RedisTemplate<String, Serializable> redisTemplate(RedisConnectionFactory factory) {
 		RedisTemplate<String, Serializable> rt = new RedisTemplate<String, Serializable>();
 		rt.setConnectionFactory(factory);
-		Jackson2JsonRedisSerializer<Serializable> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Serializable>(
-				Serializable.class);
+		Jackson2JsonRedisSerializer<Serializable> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Serializable>(Serializable.class);
 		ObjectMapper om = new ObjectMapper();
 		om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
 		om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);

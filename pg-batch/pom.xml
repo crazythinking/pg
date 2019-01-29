@@ -10,6 +10,7 @@
   </parent>
   
   <artifactId>pg-batch</artifactId>
+  <name>PowerGear - pg-batch SpringBatch扩展支持库</name>
   <packaging>pom</packaging>
   
   <modules>

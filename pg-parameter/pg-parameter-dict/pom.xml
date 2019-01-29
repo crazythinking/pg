@@ -7,7 +7,8 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>pg-parameter-dict</artifactId>
-	<name>PowerGear - Parameter Dict</name>
+	<name>PowerGear - pg-parameter-dict</name>
+	<packaging>jar</packaging>
 	
 	<dependencies>
 		<dependency>

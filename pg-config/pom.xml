@@ -12,6 +12,7 @@
 	</parent>
 
 	<artifactId>pg-config</artifactId>
+	<name>PowerGear - pg-config 通用配置支持库</name>
 	<packaging>jar</packaging>
 	
 	<!-- 以下config项目的依赖，总体原则上optional，避免spring-boot启动时自动加载不需要的加载项 ；各依赖项目根据需要自己依赖-->
@@ -28,6 +29,7 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
@@ -44,5 +46,6 @@
 			<groupId>net.engining.pg</groupId>
 			<artifactId>pg-support</artifactId>
 		</dependency>
+		
 	</dependencies>
 </project>

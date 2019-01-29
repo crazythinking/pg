@@ -13,7 +13,6 @@ import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.redis.cache.CacheKeyPrefix;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -21,11 +20,15 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import net.engining.pg.param.cache.ExtDefaultRedisCacheWriter;
+import net.engining.pg.param.cache.ExtParameterRedisCacheManager;
+import net.engining.pg.param.cache.RedisCachePrefix;
 import net.engining.pg.param.props.PgParamAndCacheProperties;
 import net.engining.pg.props.CommonProperties;
 
@@ -74,7 +77,7 @@ public class RedisCacheContextConfig extends CachingConfigurerSupport {
 	@Bean
 	@Primary
 	public CacheManager cacheManager(RedisConnectionFactory factory) {
-		RedisSerializer<String> redisSerializer = new StringRedisSerializer();
+		RedisSerializer<String> stringRedisSerializer = new StringRedisSerializer();
 		Jackson2JsonRedisSerializer<Serializable> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Serializable>(Serializable.class);
 
 		// 解决查询缓存转换异常的问题
@@ -85,18 +88,18 @@ public class RedisCacheContextConfig extends CachingConfigurerSupport {
 
 		RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
 		// 整体缓存过期时间, 默认过期时间5分钟
-		defaultExpiration(config);
+		config = defaultExpiration(config);
 		
 		// 配置序列化（解决乱码的问题）
 		config = config
-				.computePrefixWith(new RedisPrefix(commonProperties.getAppname()))
-				.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
+				.computePrefixWith(new RedisCachePrefix(commonProperties.getAppname()))
+				.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(stringRedisSerializer))
 				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))
 				.disableCachingNullValues();
 
 		RedisCacheManager cacheManager = RedisCacheManager.builder(factory)
 				.cacheDefaults(config)
-				.transactionAware()
+//				.transactionAware()
 				.build();
 		
 		return cacheManager;
@@ -109,7 +112,8 @@ public class RedisCacheContextConfig extends CachingConfigurerSupport {
 	 */
 	@Bean("cacheParameterManager")
     public CacheManager cacheParameterManager(RedisConnectionFactory factory) {
-		RedisSerializer<String> redisSerializer = new StringRedisSerializer();
+		
+		RedisSerializer<String> stringRedisSerializer = new StringRedisSerializer();
 		Jackson2JsonRedisSerializer<Serializable> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Serializable>(Serializable.class);
 
 		// 解决查询缓存转换异常的问题
@@ -124,20 +128,19 @@ public class RedisCacheContextConfig extends CachingConfigurerSupport {
 		
 		// 配置序列化（解决乱码的问题）
 		config = config
-				.computePrefixWith(new RedisPrefix())
-				.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
+				.computePrefixWith(new RedisCachePrefix())
+				.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(stringRedisSerializer))
 				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))
 				.disableCachingNullValues();
-
-		RedisCacheManager cacheManager = RedisCacheManager.builder(factory)
-				.cacheDefaults(config)
-				.transactionAware()
-				.build();
+		
+		Assert.notNull(factory, "ConnectionFactory must not be null!");
+		ExtParameterRedisCacheManager cacheManager = new ExtParameterRedisCacheManager(new ExtDefaultRedisCacheWriter(factory), config);
+//		cacheManager.setTransactionAware(true);
 		
 		return cacheManager;
     }
 	
-	private void defaultExpiration(RedisCacheConfiguration config){
+	private RedisCacheConfiguration defaultExpiration(RedisCacheConfiguration config){
 		// 整体缓存过期时间, 默认过期时间5分钟
 		long expriation = pgParamAndCacheProperties.getExpireDuration();
 		TimeUnit expireTimeUnit = pgParamAndCacheProperties.getExpireTimeUnit();
@@ -168,24 +171,7 @@ public class RedisCacheContextConfig extends CachingConfigurerSupport {
 				}
 			}
 		}
-	}
-
-	public class RedisPrefix implements CacheKeyPrefix {
-		private final String delimiter;
-
-		public RedisPrefix() {
-			this(null);
-		}
-
-		public RedisPrefix(String delimiter) {
-			this.delimiter = delimiter;
-		}
-
-		@Override
-		public String compute(String cacheName) {
-			return this.delimiter != null
-					? this.delimiter.concat(":").concat(cacheName).concat(":") : cacheName.concat(":");
-		}
+		return config;
 	}
 
 }
