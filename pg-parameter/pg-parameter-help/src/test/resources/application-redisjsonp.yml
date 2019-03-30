@@ -1,0 +1,8 @@
+pg:
+  common:
+    appname: parameter-test
+  param:
+    json-parameter-facility: true
+    enable-redis-cache: true
+    cache-group-name: cc
+

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.engining.pg.parameter;
+package net.engining.pg.support.core.context;
 
 /**
  * 为线程提供获取机构信息的能力
@@ -12,7 +12,7 @@ public class ThreadsProvider4Organization implements Provider4Organization{
 
 
 	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.Provider4Organization#setCurrentOrganizationId(java.lang.String)
+	 * @see net.engining.pg.support.core.context.Provider4Organization#setCurrentOrganizationId(java.lang.String)
 	 */
 	@Override
 	public void setCurrentOrganizationId(String orgId) {
@@ -20,7 +20,7 @@ public class ThreadsProvider4Organization implements Provider4Organization{
 	}
 
 	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.Provider4Organization#getCurrentOrganizationId()
+	 * @see net.engining.pg.support.core.context.Provider4Organization#getCurrentOrganizationId()
 	 */
 	@Override
 	public String getCurrentOrganizationId() {

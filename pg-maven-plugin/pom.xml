@@ -169,21 +169,32 @@
 	</build>
 	<profiles>
 		<profile>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<id>zebra</id>
-			<distributionManagement>
-				<snapshotRepository>
-					<id>zebra</id>
-					<url>http://118.242.36.102:6474/nexus/content/repositories/snapshots</url>
-				</snapshotRepository>
-				<repository>
-					<id>zebra</id>
-					<url>http://118.242.36.102:6474/nexus/content/repositories/releases</url>
-				</repository>
-			</distributionManagement>
-		</profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <!--<id>repo</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>repo</id>
+                    <url>https://dev.aceistar.com:18081/nexus/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>repo</id>
+                    <url>https://dev.aceistar.com:18081/nexus/content/repositories/releases</url>
+                </repository>
+            </distributionManagement>-->
+            <id>nexus</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>rdc-snapshots</id>
+                    <url>https://repo.rdc.aliyun.com/repository/51155-snapshot-Mp8thg/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>rdc-releases</id>
+                    <url>https://repo.rdc.aliyun.com/repository/51155-release-Z3WSjp/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
 	</profiles>
 	
 </project>

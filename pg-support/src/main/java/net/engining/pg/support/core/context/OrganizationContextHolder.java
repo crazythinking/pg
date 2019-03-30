@@ -1,9 +1,9 @@
-package net.engining.pg.parameter;
-
-import javax.persistence.EntityManager;
+package net.engining.pg.support.core.context;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
+
+import javax.persistence.EntityManager;
 
 /**
  * 通过{@link ThreadContextHolder}提供PCX需要的线程上下文工具类，提供oranizationId和username的便捷方法。

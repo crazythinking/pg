@@ -1,14 +1,13 @@
 package net.engining.pg.parameter.test.timeline;
 
+import net.engining.pg.parameter.HasEffectiveDate;
+import net.engining.pg.parameter.test.cache.InnerParameter;
+import org.joda.time.DateTime;
+
 import java.util.Date;
 import java.util.List;
 
-import net.engining.pg.parameter.HasEffectiveDate;
-import net.engining.pg.parameter.test.cache.InnerParameter;
-
-import org.joda.time.DateTime;
-
-public class TimelineParameter implements HasEffectiveDate{
+public class TimelineParameter implements HasEffectiveDate {
 
 	public DateTime effectiveDate;
 	

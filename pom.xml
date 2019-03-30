@@ -26,6 +26,7 @@
 		<module>pg-batch</module>
 		<module>pg-mq</module>
 		<module>pg-web</module>
+		<module>pg-config</module>
 	</modules>
 
 	<dependencyManagement>
@@ -64,6 +65,11 @@
 			<dependency>
 				<groupId>net.engining.pg</groupId>
 				<artifactId>pg-web</artifactId>
+				<version>${pg.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.engining.pg</groupId>
+				<artifactId>pg-config</artifactId>
 				<version>${pg.version}</version>
 			</dependency>
 		</dependencies>

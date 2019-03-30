@@ -1,16 +1,17 @@
 package net.engining.pg.parameter.test.suport;
 
+import net.engining.pg.parameter.test.CombineTestConfiguration;
+import net.engining.pg.parameter.test.TestApplication;
+import net.engining.pg.support.core.context.ApplicationContextHolder;
+import net.engining.pg.support.testcase.AbstractJUnit4SpringContextTestsWithoutServlet;
 import org.h2.tools.Server;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-
-import net.engining.pg.parameter.test.TestApplication;
-import net.engining.pg.support.core.context.ApplicationContextHolder;
-import net.engining.pg.support.testcase.AbstractJUnit4SpringContextTestsWithoutServlet;
 
 /**
  * 
@@ -18,7 +19,15 @@ import net.engining.pg.support.testcase.AbstractJUnit4SpringContextTestsWithoutS
  * @author luxue
  *
  */
-@SpringBootTest(classes = TestApplication.class)
+@ActiveProfiles(profiles={
+		"autotest"
+
+})
+@SpringBootTest(classes = {
+		CombineTestConfiguration.class,
+		TestApplication.class
+
+}, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public abstract class AbstractTestCaseTemplate extends AbstractJUnit4SpringContextTestsWithoutServlet {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractTestCaseTemplate.class);

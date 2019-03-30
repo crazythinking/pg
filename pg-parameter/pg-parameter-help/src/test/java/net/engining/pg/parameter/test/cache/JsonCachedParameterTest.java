@@ -1,36 +1,34 @@
 package net.engining.pg.parameter.test.cache;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-
-import java.util.Date;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.TreeBasedTable;
+import net.engining.pg.parameter.JsonGuavaCachedParameterFacility;
+import net.engining.pg.parameter.ParameterNotFoundException;
+import net.engining.pg.parameter.test.suport.AbstractTestCaseTemplate;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.TreeBasedTable;
+import java.util.Date;
 
-import net.engining.pg.parameter.LocalCachedParameterFacility;
-import net.engining.pg.parameter.ParameterNotFoundException;
-import net.engining.pg.parameter.test.suport.AbstractTestCaseTemplate;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
-@DirtiesContext(classMode=ClassMode.AFTER_CLASS)
-public class CachedParameterTest extends AbstractTestCaseTemplate{
+@ActiveProfiles(profiles={
+		"jsonp"
+
+})
+@DirtiesContext(classMode= ClassMode.AFTER_CLASS)
+public class JsonCachedParameterTest extends AbstractTestCaseTemplate {
 	
-	private static final Logger log = LoggerFactory.getLogger(CachedParameterTest.class);
+	private static final Logger log = LoggerFactory.getLogger(JsonCachedParameterTest.class);
 
 	@Autowired
-	private LocalCachedParameterFacility facility;
+	private JsonGuavaCachedParameterFacility jsonparameterFacility;
 	
 	@Autowired
 	private ControlledTicker ticker;
@@ -45,10 +43,10 @@ public class CachedParameterTest extends AbstractTestCaseTemplate{
 		sp.param2 = "param2";
 		sp.paramList = Lists.newArrayList();
 		
-		facility.addParameter("0001", sp);
+		jsonparameterFacility.addParameter("0001", sp);
 		
 		//Table取测试
-		TreeBasedTable<String, Date, SampleParameter> table = facility.getParameterTable(SampleParameter.class);
+		TreeBasedTable<String, Date, SampleParameter> table = jsonparameterFacility.getParameterTable(SampleParameter.class);
 		assertThat(table.cellSet().size(), equalTo(1));
 		assertThat(table.rowKeySet(), hasSize(1));
 		assertThat(table.rowKeySet(), contains("0001"));
@@ -56,13 +54,13 @@ public class CachedParameterTest extends AbstractTestCaseTemplate{
 		assertThat(firstSample.param1, equalTo("param1"));
 		
 		//单条取测试
-		SampleParameter got = facility.getParameter(SampleParameter.class, "0001");
+		SampleParameter got = jsonparameterFacility.getParameter(SampleParameter.class, "0001");
 		assertThat("经过串行化后取到的不该是原对象", got, not(equalTo(sp)));	//这里没有重写equals，所以是实例相等
 		assertThat(got.param1, equalTo("param1"));
 		assertThat(got.param2, equalTo("param2"));
 		
 		//确认缓存
-		SampleParameter cached = facility.getParameter(SampleParameter.class, "0001");
+		SampleParameter cached = jsonparameterFacility.getParameter(SampleParameter.class, "0001");
 		assertThat("确认取到原对象", cached, equalTo(got));	//这里没有重写equals，所以是实例相等
 		assertThat("确认取到原对象", cached, equalTo(firstSample));	//这里没有重写equals，所以是实例相等
 		assertThat(cached.param1, equalTo("param1"));
@@ -70,18 +68,18 @@ public class CachedParameterTest extends AbstractTestCaseTemplate{
 
 		//确认缓存刷新
 		sp.param1 = "new param";
-		facility.updateParameter("0001", sp);
-		SampleParameter updated = facility.getParameter(SampleParameter.class, "0001");
+		jsonparameterFacility.updateParameter("0001", sp);
+		SampleParameter updated = jsonparameterFacility.getParameter(SampleParameter.class, "0001");
 		assertThat("确认经过刷新后取到的不该是原对象", updated, not(equalTo(got)));	//这里没有重写equals，所以是实例相等
 		assertThat(updated.param1, equalTo("new param"));
 		assertThat(updated.param2, equalTo("param2"));
 		
 		//删除
 		assertThat(
-				facility.removeParameter(SampleParameter.class, "0001"),
+				jsonparameterFacility.removeParameter(SampleParameter.class, "0001"),
 				equalTo(true)
 		);
-		SampleParameter deleted = facility.getParameter(SampleParameter.class, "0001");
+		SampleParameter deleted = jsonparameterFacility.getParameter(SampleParameter.class, "0001");
 		assertThat(deleted, nullValue());
 		
 	}
@@ -97,24 +95,24 @@ public class CachedParameterTest extends AbstractTestCaseTemplate{
 		sp.param2 = "param2";
 		sp.paramList = Lists.newArrayList();
 		
-		facility.addParameter("0001", sp);
+		jsonparameterFacility.addParameter("0001", sp);
 
 		//单条取测试
-		SampleParameter got = facility.getParameter(SampleParameter.class, "0001");
+		SampleParameter got = jsonparameterFacility.getParameter(SampleParameter.class, "0001");
 		assertThat("经过串行化后取到的不该是原对象", got, is(not(equalTo(sp))));	//这里没有重写equals，所以是实例相等
 		assertThat(got.param1, equalTo("param1"));
 		assertThat(got.param2, equalTo("param2"));
 		
 		//确认缓存
-		SampleParameter cached = facility.getParameter(SampleParameter.class, "0001");
+		SampleParameter cached = jsonparameterFacility.getParameter(SampleParameter.class, "0001");
 		assertThat("确认取到原对象", cached, is(equalTo(got)));	//这里没有重写equals，所以是实例相等
 		assertThat(cached.param1, equalTo("param1"));
 		assertThat(cached.param2, equalTo("param2"));
 
 		//等待超时，比设置的多1纳秒
-		ticker.setValue(facility.getExpireTimeUnit().toNanos(facility.getExpireDuration()) + 1);
+		ticker.setValue(jsonparameterFacility.getExpireTimeUnit().toNanos(jsonparameterFacility.getExpireDuration()) + 1);
 		
-		cached = facility.getParameter(SampleParameter.class, "0001");
+		cached = jsonparameterFacility.getParameter(SampleParameter.class, "0001");
 		assertThat("确认没取到原对象", cached, is(not(equalTo(got))));	//这里没有重写equals，所以是实例相等
 		assertThat(cached.param1, equalTo("param1"));
 		assertThat(cached.param2, equalTo("param2"));
@@ -124,7 +122,7 @@ public class CachedParameterTest extends AbstractTestCaseTemplate{
 	@Test(expected = ParameterNotFoundException.class)
 	public void loadException()
 	{
-		facility.loadParameter(SampleParameter.class, "0000");
+		jsonparameterFacility.loadParameter(SampleParameter.class, "0000");
 	}
 
 	@Override

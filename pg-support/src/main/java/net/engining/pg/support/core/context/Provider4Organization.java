@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.engining.pg.parameter;
+package net.engining.pg.support.core.context;
 
 /**
  * 为应用提供获取机构信息的能力

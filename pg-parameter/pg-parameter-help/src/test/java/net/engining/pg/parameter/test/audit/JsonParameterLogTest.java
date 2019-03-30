@@ -1,10 +1,9 @@
 package net.engining.pg.parameter.test.audit;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 import net.engining.pg.parameter.ParameterFacility;
 import net.engining.pg.parameter.entity.enums.ParamOperationDef;
 import net.engining.pg.parameter.entity.model.ParameterAudit;
@@ -27,13 +26,14 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @ActiveProfiles(profiles={
-		"xmlp"
+		"jsonp"
+
 })
 @DirtiesContext(classMode= ClassMode.AFTER_CLASS)
-public class ParameterLogTest extends AbstractTestCaseTemplate {
+public class JsonParameterLogTest extends AbstractTestCaseTemplate {
 	
 	@Autowired
-	private ParameterFacility parameterFacility;
+	private ParameterFacility jsonparameterFacility;
 	
 	@PersistenceContext
 	private EntityManager em;
@@ -41,16 +41,12 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 	@Test
 	public void insertLogTest()
 	{
-		XStream xstream = new XStream(new DomDriver());
-		xstream.setMode(XStream.NO_REFERENCES);	//在生成的xml中不使用引用，以避免出现维护问题
-		xstream.ignoreUnknownElements();		//忽略未知的结点，避免删除属性时的问题
-		
 		SampleParameter sp = new SampleParameter();
 		sp.param1 = "param1";
 		sp.param2 = "param2";
 		sp.paramList = Lists.newArrayList();
 		
-		parameterFacility.addParameter("0001", sp);
+		jsonparameterFacility.addParameter("0001", sp);
 
 		// 取日志
 		QParameterAudit qParameterAudit = QParameterAudit.parameterAudit;
@@ -62,7 +58,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 		List<ParameterAudit> logs = query.fetch();
 		
 		assertThat(logs.size(), equalTo(1));
-		assertThat(logs.get(0).getNewObject(), equalTo(xstream.toXML(sp)));
+		assertThat(logs.get(0).getNewObject(), equalTo(JSON.toJSONString(sp)));
 		assertThat(logs.get(0).getOldObject(), equalTo(""));
 		assertThat(logs.get(0).getMtnUser(), notNullValue());
 		assertThat(logs.get(0).getMtnTimestamp(), notNullValue());
@@ -71,16 +67,12 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 	@Test
 	public void deleteLogTest()
 	{
-		XStream xstream = new XStream(new DomDriver());
-		xstream.setMode(XStream.NO_REFERENCES);	//在生成的xml中不使用引用，以避免出现维护问题
-		xstream.ignoreUnknownElements();		//忽略未知的结点，避免删除属性时的问题
-		
 		SampleParameter sp = new SampleParameter();
 		sp.param1 = "param1";
 		sp.param2 = "param2";
 		sp.paramList = Lists.newArrayList();
 		
-		parameterFacility.addParameter("0002", sp);
+		jsonparameterFacility.addParameter("0002", sp);
 
 		// 取日志
 		QParameterAudit qParameterAudit = QParameterAudit.parameterAudit;
@@ -92,12 +84,12 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 		List<ParameterAudit> logs = query.fetch();
 		
 		assertThat(logs.size(), equalTo(1));
-		assertThat(logs.get(0).getNewObject(), equalTo(xstream.toXML(sp)));
+		assertThat(logs.get(0).getNewObject(), equalTo(JSON.toJSONString(sp)));
 		assertThat(logs.get(0).getOldObject(), equalTo(""));
 		assertThat(logs.get(0).getMtnUser(), notNullValue());
 		assertThat(logs.get(0).getMtnTimestamp(), notNullValue());
 		
-		parameterFacility.removeParameter(SampleParameter.class, "0002");
+		jsonparameterFacility.removeParameter(SampleParameter.class, "0002");
 		JPAQuery<ParameterAudit> query2 = new JPAQueryFactory(em).select(qParameterAudit);
 		query2.from(qParameterAudit).where(qParameterAudit.paramKey.eq("0002")
 				.and(qParameterAudit.paramClass.eq(SampleParameter.class.getCanonicalName()))
@@ -107,7 +99,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 		
 		assertThat(logs2.size(), equalTo(1));
 		assertThat(logs2.get(0).getNewObject(), equalTo(""));
-		assertThat(logs2.get(0).getOldObject(), equalTo(xstream.toXML(sp)));
+		assertThat(logs2.get(0).getOldObject(), equalTo(JSON.toJSONString(sp)));
 		assertThat(logs2.get(0).getMtnUser(), notNullValue());
 		assertThat(logs2.get(0).getMtnTimestamp(), notNullValue());
 	}
@@ -115,10 +107,6 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 	@Test
 	public void updateLogTest()
 	{
-		XStream xstream = new XStream(new DomDriver());
-		xstream.setMode(XStream.NO_REFERENCES);	//在生成的xml中不使用引用，以避免出现维护问题
-		xstream.ignoreUnknownElements();		//忽略未知的结点，避免删除属性时的问题
-		
 		SampleParameter sp = new SampleParameter();
 		sp.param1 = "param1";
 		sp.param2 = "param2";
@@ -127,7 +115,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 		innerParameter.innerParameter = "innerParameter1";
 		sp.paramList.add(innerParameter);
 		
-		parameterFacility.addParameter("0003", sp);
+		jsonparameterFacility.addParameter("0003", sp);
 		
 		// 取日志
 		QParameterAudit qParameterAudit = QParameterAudit.parameterAudit;
@@ -139,7 +127,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 		List<ParameterAudit> logs = query.fetch();
 		
 		assertThat(logs.size(), equalTo(1));
-		assertThat(logs.get(0).getNewObject(), equalTo(xstream.toXML(sp)));
+		assertThat(logs.get(0).getNewObject(), equalTo(JSON.toJSONString(sp)));
 		assertThat(logs.get(0).getOldObject(), equalTo(""));
 		assertThat(logs.get(0).getMtnUser(), notNullValue());
 		assertThat(logs.get(0).getMtnTimestamp(), notNullValue());
@@ -155,7 +143,7 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 		innerParameter2.innerParameter = "innerParameter2";
 		sp2.paramList.add(innerParameter2);
 		
-		parameterFacility.updateParameter("0003", sp2);
+		jsonparameterFacility.updateParameter("0003", sp2);
 		
 		JPAQuery<ParameterAudit> query2 = new JPAQueryFactory(em).select(qParameterAudit);
 		query2.from(qParameterAudit).where(qParameterAudit.paramKey.eq("0003")
@@ -165,8 +153,8 @@ public class ParameterLogTest extends AbstractTestCaseTemplate {
 		List<ParameterAudit> logs2 = query2.fetch();
 		
 		assertThat(logs2.size(), equalTo(1));
-		assertThat(logs2.get(0).getNewObject(), equalTo(xstream.toXML(sp2)));
-		assertThat(logs2.get(0).getOldObject(), equalTo(xstream.toXML(sp)));
+		assertThat(logs2.get(0).getNewObject(), equalTo(JSON.toJSONString(sp2)));
+		assertThat(logs2.get(0).getOldObject(), equalTo(JSON.toJSONString(sp)));
 		assertThat(logs2.get(0).getMtnUser(), notNullValue());
 		assertThat(logs2.get(0).getMtnTimestamp(), notNullValue());
 	}

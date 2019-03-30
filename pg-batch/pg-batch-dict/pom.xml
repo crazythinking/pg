@@ -8,7 +8,7 @@
 	</parent>
 	
 	<artifactId>pg-batch-dict</artifactId>
-	<name>PowerGear - batch Dict</name>
+	<name>PowerGear - batch-dict 数据结构定义</name>
 	
 	<dependencies>
 		<dependency>
@@ -69,7 +69,6 @@
 						</goals>
 						<phase>generate-sources</phase>
 						<configuration>
-							<sourceDirectory>${project.build.directory}/pg-entities</sourceDirectory>
 							<outputDirectory>${project.build.directory}/querydsl-sources</outputDirectory>
 							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
 						</configuration>

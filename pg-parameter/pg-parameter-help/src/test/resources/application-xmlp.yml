@@ -1,0 +1,7 @@
+pg:
+  common:
+    appname: parameter-test
+  param:
+    json-parameter-facility: false
+    enable-redis-cache: false
+

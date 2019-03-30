@@ -1,4 +1,4 @@
-package net.engining.pg.parameter;
+package net.engining.pg.support.core.context;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,7 +13,7 @@ public class ProcessesProvider4Organization implements Provider4Organization{
 	private String defaultOrgId = GLOBLE_ORGID;
 
 	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.Provider4Organization#getCurrentOrganizationId()
+	 * @see net.engining.pg.support.core.context.Provider4Organization#getCurrentOrganizationId()
 	 */
 	@Override
 	public String getCurrentOrganizationId() {
@@ -21,7 +21,7 @@ public class ProcessesProvider4Organization implements Provider4Organization{
 	}
 
 	/* (non-Javadoc)
-	 * @see net.engining.pg.parameter.Provider4Organization#setCurrentOrganizationId(java.lang.String)
+	 * @see net.engining.pg.support.core.context.Provider4Organization#setCurrentOrganizationId(java.lang.String)
 	 */
 	@Override
 	public void setCurrentOrganizationId(String orgId) {

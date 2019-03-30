@@ -8,7 +8,7 @@
 	</parent>
 	
 	<artifactId>pg-batch-help</artifactId>
-	<name>PowerGear - 批量辅助工具库</name>
+	<name>PowerGear - batch-help 批量辅助工具库</name>
 	
 	<dependencies>
 		<dependency>

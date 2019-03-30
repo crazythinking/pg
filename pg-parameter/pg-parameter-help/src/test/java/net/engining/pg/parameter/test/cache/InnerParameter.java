@@ -1,6 +1,8 @@
 package net.engining.pg.parameter.test.cache;
 
-public class InnerParameter {
+import java.io.Serializable;
+
+public class InnerParameter implements Serializable {
 	
 	public String innerParameter;
 }

@@ -7,15 +7,17 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>pg-parameter-help</artifactId>
-	<name>PowerGear - pg-parameter-help 参数工具库</name>
-	<dependencies>
+	<name>PowerGear - pg-parameter-help</name>
+	<packaging>jar</packaging>
 	
+	<dependencies>
+
 		<!-- 自身框架依赖 -->
 		<dependency>
 			<groupId>net.engining.pg</groupId>
 			<artifactId>pg-parameter-dict</artifactId>
 		</dependency>
-		
+
 		<!-- Spring Sec, 参数变更审计日志处理会通过SecurityContextHolder获取当前用户容器上下文中的用户 -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -27,14 +29,27 @@
 			<scope>provided</scope>	<!-- 不强制依赖传递 -->
 		</dependency>
 		<dependency>
-			<groupId>commons-collections</groupId>
-  			<artifactId>commons-collections</artifactId>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<optional>true</optional>
 		</dependency>
-		<dependency><!-- 依赖注入，非直接引用，但LocalCachedParameterFacility再maven编译时，没有会报错 -->
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+		</dependency>
+		<dependency><!-- 依赖注入，非直接引用，但ParameterFacility在maven编译时，没有会报错 -->
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
+			<version>1</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- Spring 测试支持 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,14 +62,53 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- redis 和 缓存 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-cache</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.batch</groupId>
 			<artifactId>spring-batch-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>net.engining.pg</groupId>
+			<artifactId>pg-config</artifactId>
 			<scope>test</scope>
 		</dependency>
 

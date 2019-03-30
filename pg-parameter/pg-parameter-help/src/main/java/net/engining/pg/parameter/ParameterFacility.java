@@ -1,85 +1,184 @@
 package net.engining.pg.parameter;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.Date;
-import java.util.Map;
-
-import org.apache.commons.lang3.time.DateUtils;
-
-import com.google.common.base.Optional;
+import com.alibaba.fastjson.JSON;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 import com.google.common.collect.TreeBasedTable;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.thoughtworks.xstream.XStream;
+import net.engining.pg.parameter.entity.enums.ParamOperationDef;
+import net.engining.pg.parameter.entity.model.ParameterAudit;
+import net.engining.pg.parameter.entity.model.ParameterObject;
+import net.engining.pg.parameter.entity.model.ParameterObjectKey;
+import net.engining.pg.parameter.entity.model.QParameterObject;
+import net.engining.pg.parameter.utils.ParamObjDiffUtils;
+import net.engining.pg.support.core.context.Provider4Organization;
+import net.engining.pg.support.core.exception.ErrorCode;
+import net.engining.pg.support.core.exception.ErrorMessageException;
+import net.engining.pg.support.utils.ValidateUtilExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 
-public abstract class ParameterFacility {
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.io.Serializable;
+import java.util.*;
 
-	/**
-	 * 参数如果是全局的，那么机构号用此常量代替
-	 */
-	public static final String GLOBAL_ORGANIZATION_ID = "*";
-	
-	/**
-	 * 参数如果是唯一的，那么参数Key用此常量代替
-	 */
-	public static final String UNIQUE_PARAM_KEY = "*";
-	
-	private static Date maxDate = new Date(Long.MAX_VALUE);
-	
-	//最小日期时间+1天，防止mysql5.7以上版本数据库出错，timestamp型数据的取值范围('1970-01-01 00:00:00', '2037-12-31 23:59:59']
-	//这里为了兼容遗留数据仍然+1秒，但是需要确保Mysql服务器的时区设置正确，即与JVM运行参数所设置时区保持一致
-	private static Date minDate = DateUtils.addSeconds(new Date(0), 1);
-	
-	/**
-	 * 根据参数类型、参数主键，取在指定日期有效的参数。
-	 */
-	public abstract <T> T getParameter(Class<T> paramClass, String key, Date effectiveDate);
-	
-	
-	/**
-	 * 取参数表格
-	 * @param paramClass
-	 * @return
-	 */
-	public abstract <T> TreeBasedTable<String, Date, T> getParameterTable(Class<T> paramClass);
+import static com.google.common.base.Preconditions.checkNotNull;
 
-	/**
-	 * 添加新参数。生效日期由 {@link HasEffectiveDate}指定
-	 * @param key
-	 * @param newParameter
-	 */
-	public abstract <T> void addParameter(String key, T newParameter);
-	
-	/**
-	 * 更新指定参数，生效日期由 {@link HasEffectiveDate}指定。
-	 * @param key
-	 * @param parameter
-	 */
-	public abstract <T> void updateParameter(String key, T parameter, Date effectiveDate);
-	
-	public <T> void addUniqueParameter(T newParameter)
-	{
-		addParameter(UNIQUE_PARAM_KEY, newParameter);
+public abstract class ParameterFacility implements ParameterInter{
+
+	Logger logger = LoggerFactory.getLogger(ParameterFacility.class);
+
+	@PersistenceContext
+	private EntityManager em;
+
+	// 下面是参数默认操作逻辑，由子类调用
+
+	<T> T defaultGetParameter(Class<T> paramClass, String key, Date effectiveDate){
+		checkNotNull(paramClass, "需要指定参数类 paramClass");
+		checkNotNull(key, "需要指定参数key");
+		checkNotNull(effectiveDate, "需要指定参数生效日期 effectiveDate");
+
+		TreeBasedTable<String, Date, T> table = getParameterTable(paramClass);
+		SortedMap<Date, T> timeline = table.row(key);
+
+		if (timeline.isEmpty())
+		{
+			//没有
+			return null;
+		}
+
+		//先看是不是有正好起效的，因为日期是闭区间
+		if (timeline.containsKey(effectiveDate))
+		{
+			return timeline.get(effectiveDate);
+		}
+		else
+		{
+			//这里是按date从小到大排序
+			SortedMap<Date, T> map = timeline.headMap(effectiveDate);
+			if (map.isEmpty())
+			{
+				//没有范围内的
+				return null;
+			}
+			Date lastKey = map.lastKey();
+			return timeline.get(lastKey);
+		}
 	}
 
-	/**
-	 * 不指定有效期，更新指定参数
-	 * @param paramClass
-	 * @param key
-	 * @return
-	 */
-	public <T> void updateParameter(String key, T parameter)
-	{
-		updateParameter(key, parameter, minDate);
+	@SuppressWarnings("unchecked")
+	<T> TreeBasedTable<String, Date, T>  defaultGetParameterTable(Class<T> paramClass,
+                                                                  Provider4Organization provider4Organization,
+                                                                  LoadingCache<String, TreeBasedTable<String, Date, Object>> cache){
+		String org = provider4Organization.getCurrentOrganizationId();
+		String classname = paramClass.getCanonicalName();
+		try
+		{
+			return (TreeBasedTable<String, Date, T>) cache.get(createCacheKey(org, classname));
+		}
+		catch (Exception e)
+		{
+			throw new ErrorMessageException(ErrorCode.UnknowFail, ErrorCode.UnknowFail.getLabel(), e);
+		}
 	}
-	
-	/**
-	 * 不指定有效期，更新指定全局唯一参数
-	 * @param parameter
-	 */
-	public <T> void updateUniqueParameter(T parameter)
-	{
-		updateParameter(UNIQUE_PARAM_KEY, parameter);
-	}
+
+    @Transactional
+    <T> ParameterObject defaultAddParameter(String key, T newParameter, Provider4Organization provider4Organization, XStream xstream){
+        checkNotNull(newParameter, "添加时对象不能为null");
+        checkNotNull(key, "添加时对象key不能为null");
+
+        Date effectiveDate = minDate;	//默认为史前
+
+        if (newParameter instanceof HasEffectiveDate)
+        {
+            //如果支持effectiveDate，则使用参数内的数据
+            Date eff = ((HasEffectiveDate) newParameter).getEffectiveDate();
+            if (eff != null)
+            {
+                effectiveDate = eff;
+            }
+            else
+            {
+                logger.warn("参数[{}]/[{}]支持effectiveDate特性，但没有指定生效日期，使用默认值new Date(0l)", newParameter.getClass(), key);
+                ((HasEffectiveDate) newParameter).setEffectiveDate(effectiveDate);
+            }
+        }
+
+        ParameterObjectKey pok = createKey(key, effectiveDate, newParameter.getClass(), provider4Organization);
+        if (em.find(ParameterObject.class, pok) != null)
+        {
+            throw new ParameterExistsException(pok.getOrgId(), pok.getParamClass(), pok.getParamKey(), pok.getEffectiveDate());
+        }
+
+        ParameterObject obj = new ParameterObject();
+        obj.setOrgId(pok.getOrgId());
+        obj.setParamKey(pok.getParamKey());
+        obj.setParamClass(pok.getParamClass());
+        obj.setEffectiveDate(effectiveDate);
+        setupParameterObjectValueAndAduitFd(newParameter, xstream, obj);
+
+        if (newParameter instanceof HasVersion)
+        {
+            ((HasVersion) newParameter).setVersion(0);
+        }
+
+        em.persist(obj);
+
+        return obj;
+    }
+
+    private <T> void setupParameterObjectValueAndAduitFd(T newParameter, XStream xstream, ParameterObject obj) {
+        if(xstream != null){
+            obj.setParamObject(xstream.toXML(newParameter));
+        }
+        else {
+            obj.setParamObject(JSON.toJSONString(newParameter));
+        }
+        obj.setMtnTimestamp(new Date());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null)
+            obj.setMtnUser(auth.getName());
+    }
+
+	@Transactional
+    <T> Map<String, Serializable> defaultUpdateParameter(String key, T parameter, Date effectiveDate, Provider4Organization provider4Organization, XStream xstream){
+	    Map<String, Serializable> retMap = Maps.newHashMap();
+        checkNotNull(parameter, "更新时对象不能为null");
+        checkNotNull(key, "更新时对象key不能为null");
+
+        if(ValidateUtilExt.isNullOrEmpty(effectiveDate)) {
+            effectiveDate = minDate;	//默认为史前+1d '1970-01-02 00:00:00'
+        }
+
+        if (parameter instanceof HasEffectiveDate) {
+            //如果支持effectiveDate，则使用参数内的数据
+            effectiveDate = ((HasEffectiveDate) parameter).getEffectiveDate();
+        }
+
+        ParameterObjectKey pok = createKey(key, effectiveDate, parameter.getClass(), provider4Organization);
+        ParameterObject obj = em.find(ParameterObject.class, pok);
+
+        if (obj == null)
+        {
+            throw new ParameterNotFoundException(pok.getOrgId(), pok.getParamClass(), pok.getParamKey(), effectiveDate);
+        }
+
+        String oldParamStr = obj.getParamObject();
+        setupParameterObjectValueAndAduitFd(parameter, xstream, obj);
+
+        //避免竞争条件，所以提前flush
+        em.flush();
+
+        retMap.put("oldParamStr",oldParamStr);
+        retMap.put("parameterObject", obj);
+        return retMap;
+    }
 
 	/**
 	 * 删除指定参数。
@@ -88,142 +187,161 @@ public abstract class ParameterFacility {
 	 * @param effectiveDate 生效日期。如果为null，则表示删除所有的生效日期的参数。
 	 * @return 是否确实删除参数
 	 */
-	public abstract <T> boolean removeParameter(Class<T> paramClass, String key, Date effectiveDate);
+	//public abstract <T> boolean removeParameter(Class<T> paramClass, String key, Date effectiveDate);
 
-	// 下面是基于基本操作函数的简化重载或向下兼容重载
-	
-	/**
-	 * 取唯一、不设有效日期的参数
-	 * @param paramClass
-	 * @return
-	 */
-	public <T> T loadUniqueParameter(Class<T> paramClass)
-	{
-		return loadParameter(paramClass, UNIQUE_PARAM_KEY);
+    @Transactional
+    <T> boolean defaultRemoveParameter(Class<T> paramClass, String key, Date effectiveDate, Provider4Organization provider4Organization, XStream xstream) {
+
+        QParameterObject q = QParameterObject.parameterObject;
+        String orgId = provider4Organization.getCurrentOrganizationId();
+        String classname = paramClass.getCanonicalName();
+
+        JPAQuery<ParameterObject> query = new JPAQueryFactory(em).select(q);
+        query.from(q).where(
+                q.orgId.eq(orgId),
+                q.paramClass.eq(classname),
+                q.paramKey.eq(key)
+        );
+        if (effectiveDate != null)
+        {
+            query.where(q.effectiveDate.eq(effectiveDate));
+        }
+
+        List<ParameterObject> paramObjects = query.fetch();
+
+        if (ValidateUtilExt.isNullOrEmpty(paramObjects))
+        {
+            logger.warn("希望删的参数不存在[{}/{}/{}/{}]", orgId, classname, key, effectiveDate);
+            return false;
+        } else {
+            for (ParameterObject paramObject : paramObjects) {
+                em.remove(paramObject);
+
+                if (xstream != null){
+                    // 记录操作日志
+                    auditPrmModify(
+                            key,
+                            paramObject.getEffectiveDate(),
+                            paramClass.getCanonicalName(),
+                            ParamOperationDef.DELETE,
+                            null,
+                            xstream.fromXML(paramObject.getParamObject()),
+                            provider4Organization,
+							xstream
+                    );
+                }
+                else {
+                    // 记录操作日志
+                    auditPrmModify(
+                            key,
+                            paramObject.getEffectiveDate(),
+                            paramClass.getCanonicalName(),
+                            ParamOperationDef.DELETE,
+                            null,
+                            JSON.parseObject(paramObject.getParamObject(), paramClass),
+                            provider4Organization,
+                            null
+                    );
+                }
+
+
+            }
+        }
+        return true;
+    }
+
+	List<ParameterObject> fetchParamsByLocalCacheKey(String key){
+		//cache中的key是 (org|class_name)，切分org和classname
+		int pos = key.indexOf('|');
+
+		QParameterObject q = QParameterObject.parameterObject;
+
+		return new JPAQueryFactory(em)
+				.select(q)
+				.from(q)
+				.where(q.orgId.eq(key.substring(0, pos)), q.paramClass.eq(key.substring(pos + 1)))
+				.fetch();
 	}
 
-	/**
-	 * 当使用此方法取参数时，如参数不存在，抛出异常
-	 * 
-	 * @param paramClass 参数类型
-	 * @param key 参数主键
-	 * @return 取得的参数
-	 */
-	public <T> T loadParameter(Class<T> paramClass, String key, Date effectiveDate)
-	{
-		T param = getParameter(paramClass, key, effectiveDate);
-		if (param == null)
+	void applicationCacheEventAction(ParameterChangedEvent event, LoadingCache<String, TreeBasedTable<String, Date, Object>> cache){
+		//刷新参数
+		String cacheKey = createCacheKey(event.getOrgId(), event.getParamClass());
+		if (cache.getIfPresent(cacheKey) != null)
 		{
-			throw new ParameterNotFoundException(paramClass.getCanonicalName(), key);
+			logger.info("刷新参数缓存[{}]", cacheKey);
 		}
-		return param;
+		//避免竞争条件，总是invalidate
+		cache.invalidate(cacheKey);
 	}
 
 	/**
-	 * 不指定有效期，取最新的版本(如果参数启用effectiveDate机制，慎用）
-	 * @param paramClass
-	 * @param key
-	 * @return
+	 * 参数在cache中的key：org|class_name
 	 */
-	public <T> T getParameter(Class<T> paramClass, String key)
+    private String createCacheKey(String orgId, String classname)
 	{
-		return getParameter(paramClass, key, maxDate);
+		return orgId + "|" + classname;
 	}
 
-	/**
-	 * 返回一个可能为空的参数实例
-	 * @param paramClass
-	 * @return
-	 */
-	public <T> Optional<T> getUniqueParameter(Class<T> paramClass)
-	{
-		return Optional.fromNullable(getParameter(paramClass, UNIQUE_PARAM_KEY));
-	}
+    /**
+     * 构建参数Table的组合主键对象
+     */
+    private ParameterObjectKey createKey(String key, Date effectiveDate, Class<?> clazz, Provider4Organization provider4Organization)
+    {
+        ParameterObjectKey pok = new ParameterObjectKey();
+        pok.setOrgId(provider4Organization.getCurrentOrganizationId());
+        pok.setParamKey(key);
+        pok.setParamClass(clazz.getCanonicalName());
+        pok.setEffectiveDate(effectiveDate);
+        return pok;
+    }
 
-	/**
-	 * 当使用此方法取参数时，如参数不存在，抛出异常
-	 * 
-	 * @param paramClass 参数类型
-	 * @param key 参数主键
-	 * @return 取得的参数
-	 */
-	public <T> T loadParameter(Class<T> paramClass, String key)
-	{
-		T param = getParameter(paramClass, key);
-		if (param == null)
-		{
-			throw new ParameterNotFoundException(paramClass.getCanonicalName(), key);
-		}
-		return param;
-	}
-	
-	/**
-	 * 取指定参数的各key的最新值。（供不启用effectiveDate参数使用，向下兼容）
-	 * @param paramClass
-	 * @return
-	 */
-	public <T> Map<String, T> getParameterMap(Class<T> paramClass)
-	{
-		return getParameterMap(paramClass, maxDate);
-	}
-	
-	/**
-	 * 取给定时间点的有效参数Map
-	 * @param paramClass
-	 * @param effectiveDate
-	 * @return
-	 */
-	public <T> Map<String, T> getParameterMap(Class<T> paramClass, Date effectiveDate)
-	{
-		checkNotNull(paramClass, "需要指定参数类 paramClass");
-		checkNotNull(effectiveDate, "需要指定参数生效日期 effectiveDate");
-		
-		Map<String, T> map = Maps.newLinkedHashMap();
-		TreeBasedTable<String, Date, T> table = getParameterTable(paramClass);
-		for (String key : table.rowKeySet())
-		{
-			T param = getParameter(paramClass, key, effectiveDate);
-			if (param != null)
-			{
-				map.put(key, param);
-			}
-		}
-		return map;
-	}
+    /**
+     * 记录参数操作审计日志
+     *
+     */
+    @Transactional
+    public <T> void auditPrmModify(String key, Date effectiveDate, String paramClass, ParamOperationDef operation, T newObj,
+                                   T oldObj, Provider4Organization provider4Organization, XStream xstream) {
+        String org = provider4Organization.getCurrentOrganizationId();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String user = auth == null ? "" : auth.getName();
 
-	/**
-	 * 添加支持 {@link HasKey}的参数
-	 * @param newParameter
-	 */
-	public void addParameter(HasKey newParameter)
-	{
-		addParameter(newParameter.getKey(), newParameter);
-	}
+        ParameterAudit prmAudit = new ParameterAudit();
+        prmAudit.setOrgId(org);
+        prmAudit.setParamKey(key);
+        prmAudit.setParamClass(paramClass);
+        prmAudit.setEffectiveDate(effectiveDate);
+        prmAudit.setParamOperation(operation);
+        if(xstream != null){
+            prmAudit.setOldObject(oldObj == null ? "" : xstream.toXML(oldObj));
+            prmAudit.setNewObject(newObj == null ? "" : xstream.toXML(newObj));
+        }
+        else{
+            prmAudit.setOldObject(oldObj == null ? "" : JSON.toJSONString(oldObj));
+            prmAudit.setNewObject(newObj == null ? "" : JSON.toJSONString(newObj));
+        }
+        prmAudit.setMtnUser(user);
+        prmAudit.setMtnTimestamp(new Date());
+        switch (operation) {
+            case INSERT:
+                prmAudit.setUpdateLog("新增参数，详细记录参看xml数据");
+                break;
+            case DELETE:
+                prmAudit.setUpdateLog("删除参数，原记录参看xml数据");
+                break;
+            case UPDATE:
+                try {
+                    prmAudit.setUpdateLog(ParamObjDiffUtils.diff(newObj, oldObj, "", "", 0, 0));
+                } catch (Exception e) {
+                    logger.error("对象对比时异常", e);
+                    prmAudit.setUpdateLog("参数对象无法比对");
+                }
+                break;
+            default:
+                break;
+        }
 
-	/**
-	 * 更新支持 {@link HasKey}的参数
-	 * @param newParameter
-	 */
-	public void updateParameter(HasKey parameter)
-	{
-		updateParameter(parameter.getKey(), parameter);
-	}
-
-	/**
-	 * 不管effectiveDate，指定key全删(如果参数启用effectiveDate机制，慎用）
-	 * @param paramClass
-	 * @param key
-	 */
-	public <T> boolean removeParameter(Class<T> paramClass, String key)
-	{
-		return removeParameter(paramClass, key, null);
-	}
-	
-	/**
-	 * @return the minDate
-	 */
-	public static Date getMinDate() {
-		return minDate;
-	}
+        em.persist(prmAudit);
+    }
 
 }
